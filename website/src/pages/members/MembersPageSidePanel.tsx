@@ -31,6 +31,7 @@ import ThreadPanel from './ThreadPanel'
 import { useCrewmateThreadsFlag } from '../../hooks/useCrewmateThreadsFlag'
 import CrewDashboardTab from './CrewDashboardTab'
 import { isDashboardPreview, withoutDashboardPreview } from './dashboardPreview'
+import { claimDashboardOnLoad } from './dashboardOnLoad'
 import { mergePaneDraft } from '../../utils/chatPaneDrafts'
 import { sessionTitleRoster } from '../../utils/sessionRoster'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -461,6 +462,15 @@ export function useMembersPageSidePanel({
   const leaveDashboardPreview = useCallback(() => {
     setSearchParams(withoutDashboardPreview, { replace: true, state: location.state })
   }, [setSearchParams, location.state])
+  // A REFRESH opens the Dashboard tab -- the crewmate's page, or the suggestions
+  // page when none is adopted -- rather than whatever tab the persisted strip had
+  // focused. Once per crewmate and strip bucket per page load (`claimDashboardOnLoad`),
+  // so a tab the person picks afterwards, or on an in-app return, is theirs.
+  useEffect(() => {
+    if (!activeMemberName) return
+    if (!claimDashboardOnLoad(activeMemberName, activeSlot || '')) return
+    focusPanelTab(CREW_DASHBOARD_TAB_ID)
+  }, [activeMemberName, activeSlot, focusPanelTab])
   // The overlay scrim hides only the side panel. Profile is a sibling and stays
   // mounted, so closing the overlay is not a schedule-draft exit.
   const requestCloseOverlay = useCallback(() => {
@@ -542,6 +552,7 @@ export function MembersPageSidePanel({
           slug={activeSlug}
           member={activeMemberName}
           displayName={crewDisplayName(activeView ?? active)}
+          avatar={(activeView ?? active)?.avatar}
           // A needs-you option lands in this crewmate's chat box; the person sends it.
           onAct={activeSlot ? (text: string) => mergePaneDraft(activeSlot, text, []) : undefined}
           // Badge click opens the Profile tab directly so the person can unlock.
