@@ -32,7 +32,8 @@ import { useCrewmateThreadsFlag } from '../../hooks/useCrewmateThreadsFlag'
 import CrewDashboardTab from './CrewDashboardTab'
 import { isDashboardPreview, withoutDashboardPreview } from './dashboardPreview'
 import { claimDashboardOnLoad } from './dashboardOnLoad'
-import { mergePaneDraft } from '../../utils/chatPaneDrafts'
+import { suggestPaneDraft } from '../../utils/chatPaneDrafts'
+import { revealComposer } from '../chat/composerFocus'
 import { sessionTitleRoster } from '../../utils/sessionRoster'
 import { AnimatePresence, motion } from 'framer-motion'
 import { isSidePanelHidden, shouldMountSidePanel, sidePanelDockMotion } from '../chat/sidePanelMount'
@@ -464,8 +465,9 @@ export function useMembersPageSidePanel({
   }, [setSearchParams, location.state])
   // A REFRESH opens the Dashboard tab -- the crewmate's page, or the suggestions
   // page when none is adopted -- rather than whatever tab the persisted strip had
-  // focused. Once per crewmate and strip bucket per page load (`claimDashboardOnLoad`),
-  // so a tab the person picks afterwards, or on an in-app return, is theirs.
+  // focused. Once per crewmate per page load, claimed once its slot confirms
+  // (`claimDashboardOnLoad`), so a tab the person picks afterwards, in another
+  // thread, or on an in-app return, is theirs.
   useEffect(() => {
     if (!activeMemberName) return
     if (!claimDashboardOnLoad(activeMemberName, activeSlot || '')) return
@@ -553,8 +555,10 @@ export function MembersPageSidePanel({
           member={activeMemberName}
           displayName={crewDisplayName(activeView ?? active)}
           avatar={(activeView ?? active)?.avatar}
-          // A needs-you option lands in this crewmate's chat box; the person sends it.
-          onAct={activeSlot ? (text: string) => mergePaneDraft(activeSlot, text, []) : undefined}
+          // A needs-you option or a suggested prompt lands in this crewmate's
+          // chat box; the person sends it. The composer is revealed (focused on
+          // desktop) so the result of the click is where the reader looks.
+          onAct={activeSlot ? (text: string) => { suggestPaneDraft(activeSlot, text); revealComposer() } : undefined}
           // Badge click opens the Profile tab directly so the person can unlock.
           // Guard against an unsaved schedule form in the already-open card:
           // openProfile() increments the nonce which re-mounts the panel.

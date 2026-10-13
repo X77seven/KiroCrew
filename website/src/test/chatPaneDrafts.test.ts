@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { readPaneDraft, writePaneDraft, takePaneDraft, mergePaneDraft, subscribePaneDraft, PANE_DRAFTS_KEY, LEGACY_PANE_FILE_DRAFTS_KEY, PANE_DRAFTS_MAX_BYTES, __resetPaneDraftsForTests } from '../utils/chatPaneDrafts'
+import { readPaneDraft, writePaneDraft, takePaneDraft, mergePaneDraft, subscribePaneDraft, suggestPaneDraft, takePaneDraftSwap, PANE_DRAFTS_KEY, LEGACY_PANE_FILE_DRAFTS_KEY, PANE_DRAFTS_MAX_BYTES, __resetPaneDraftsForTests } from '../utils/chatPaneDrafts'
 import { carryPastes, formatToken, mergeCarriedDraft, type PasteBlock } from '../utils/pasteTokens'
 
 /* The pane's parked drafts must survive the storage layer refusing a write:
@@ -260,5 +260,48 @@ describe('carryPastes', () => {
     const { text, pastes } = carryPastes(`${formatToken(free)} ${formatToken(taken)}`, [free, taken, kept[0]], kept)
     expect(pastes).toEqual([kept[0], free, { ...taken, seq: 2 }])
     expect(text).toBe(`${formatToken(free)} ${formatToken({ ...taken, seq: 2 })}`)
+  })
+})
+
+/* A suggested prompt on a crewmate's empty Dashboard fills the chat box.
+ * Clicking a second one must REPLACE the first while the box still holds it
+ * untouched, not stack both into one message (UX review on #19866). */
+describe('suggestPaneDraft', () => {
+  beforeEach(() => {
+    sessionStorage.clear()
+    __resetPaneDraftsForTests()
+  })
+
+  it('a second prompt replaces the first in a parked composer', () => {
+    suggestPaneDraft('m', 'first prompt')
+    suggestPaneDraft('m', 'second prompt')
+    expect(readPaneDraft('m').text).toBe('second prompt')
+  })
+
+  it('appends instead when the user edited the first prompt', () => {
+    suggestPaneDraft('m', 'first prompt')
+    writePaneDraft('m', { text: 'first prompt, but mine', files: [], pastes: [] })
+    suggestPaneDraft('m', 'second prompt')
+    expect(readPaneDraft('m').text).toContain('first prompt, but mine')
+    expect(readPaneDraft('m').text).toContain('second prompt')
+  })
+
+  it('leaves text the user typed before any prompt in place', () => {
+    writePaneDraft('m', { text: 'my own words', files: [], pastes: [] })
+    suggestPaneDraft('m', 'a prompt')
+    expect(readPaneDraft('m').text).toContain('my own words')
+    expect(readPaneDraft('m').text).toContain('a prompt')
+  })
+
+  it('hands a live composer the text to swap out, once', () => {
+    const arrivals: Array<{ text: string; swap: string | undefined }> = []
+    subscribePaneDraft('m', () => arrivals.push({ text: takePaneDraft('m').text, swap: takePaneDraftSwap('m') }))
+    suggestPaneDraft('m', 'first prompt')
+    suggestPaneDraft('m', 'second prompt')
+    expect(arrivals).toEqual([
+      { text: 'first prompt', swap: undefined },
+      { text: 'second prompt', swap: 'first prompt' },
+    ])
+    expect(takePaneDraftSwap('m')).toBeUndefined()
   })
 })

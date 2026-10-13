@@ -10,9 +10,14 @@ describe('claimDashboardOnLoad', () => {
     expect(claimDashboardOnLoad('oncall', 'member-oncall')).toBe(false)
   })
 
-  it('claims again when the strip re-buckets onto the confirmed slot', () => {
-    expect(claimDashboardOnLoad('oncall', '')).toBe(true)
+  it('does not claim before the slot confirms, then claims once on the confirmed slot', () => {
+    expect(claimDashboardOnLoad('oncall', '')).toBe(false)
     expect(claimDashboardOnLoad('oncall', 'member-oncall')).toBe(true)
+  })
+
+  it('a second thread of the same crewmate does not force Dashboard again', () => {
+    expect(claimDashboardOnLoad('oncall', 'member-oncall')).toBe(true)
+    expect(claimDashboardOnLoad('oncall', 'member-oncall-2')).toBe(false)
   })
 
   it('claims each crewmate on its own', () => {

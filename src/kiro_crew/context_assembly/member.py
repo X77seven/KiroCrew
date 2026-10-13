@@ -321,7 +321,10 @@ _MEMBER_BRIEFING_ITEM_UNAVAILABLE = """
 # session has that identity; a subagent is a weaker place to stand. So the subagent is
 # extra capacity for a long page job, and the crewmate's own hands are the path.
 _MEMBER_DASHBOARD_ITEM = """
-7. You have a Dashboard tab of your own, and it is yours to change. `dashboard_fields`
+7. You have a Dashboard tab of your own, and it is yours to change. The
+   `[DASHBOARD]` block on your turn says what that tab shows right now, and it wins
+   over this item: when it says the tab shows suggestions, there are no fields to
+   keep up yet. When it names a page, `dashboard_fields`
    lists its fields, `dashboard_types` says which folds exist and what each one holds so
    you read a number from a real path instead of guessing one, and `dashboard_write`
    fills the fields that are yours. Anything a person must ACT on goes into

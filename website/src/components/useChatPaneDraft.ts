@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useLayoutEffect, useMemo } from 'react'
-import { takePaneDraft, writePaneDraft, mergePaneDraft, subscribePaneDraft } from '../utils/chatPaneDrafts'
+import { takePaneDraft, takePaneDraftSwap, writePaneDraft, mergePaneDraft, subscribePaneDraft } from '../utils/chatPaneDrafts'
 import { type PasteBlock, mergeCarriedDraft } from '../utils/pasteTokens'
 import { useComposerPastes } from '../chat-core/composer/composerPastes'
 import { parseDirTokens } from '../utils/fileTokens'
@@ -92,9 +92,12 @@ export function useChatPaneDraft(slotKey: string) {
     // sit in the store until this pane's own park overwrote it.
     const unsubscribe = subscribePaneDraft(slotKey, () => {
       const arrived = takePaneDraft(slotKey)
+      // A suggested prompt replacing the one it put here before, while the
+      // composer still holds that one untouched (`swapPaneDraftText`).
+      const swap = takePaneDraftSwap(slotKey)
       if (arrived.text) {
         const carried = carryIntoComposer(arrived.text, arrived.pastes)
-        setInput(cur => mergeCarriedDraft(cur, carried))
+        setInput(cur => (swap !== undefined && cur.trim() === swap ? carried.text : mergeCarriedDraft(cur, carried)))
       }
       if (arrived.files.length) setPendingFiles(cur => [...cur, ...arrived.files.filter(f => !cur.includes(f))])
     })
