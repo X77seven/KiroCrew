@@ -55,9 +55,9 @@ them and the gate reads as passing.
 Raising the cap is not enough on its own, because the cap is a number someone has
 to keep ahead of the repo. The repo passed 500 open PRs (723 on 2026-10-12), so
 `--limit 500` began truncating silently in exactly the way the default does — a
-truncated scan is indistinguishable from a clean one. So the gate asserts rather
-than trusting the cap: compare the row count returned against the `--limit`
-passed, and read equality as truncation rather than as a pass.
+truncated scan is indistinguishable from a clean one. So the gate stops trusting a
+cap: it pages with cursors to the end and asserts the last page's `hasNextPage` is
+`false` (the command is in `references/ci.md`).
 
 Truncation has two axes, and the second one survives any cap. The PR list caps how
 many PRs you see; each PR's `files` connection separately caps how many of *its*
@@ -66,6 +66,16 @@ only widened the outer cap would still miss an overlap hidden past file 100 of a
 large PR, so each PR's `files.pageInfo.hasNextPage` is checked too and a truncated
 one is re-read in full. At this repo's size the single-request form also 504s, which
 is why the gate pages with cursors instead of asking for one large page.
+
+The scripts need Python 3.12 or newer, and SKILL.md says so where the scripts are
+introduced. They carry PEP-604 annotations (`str | None`) that an older interpreter
+evaluates at class-definition time, so on a host whose `python3` is 3.9 the first
+script run dies with `unsupported operand type(s) for |: 'type' and 'NoneType'`
+before doing any work. The floor used to be asserted only inside the kirocrew
+profile's gate-check command, which runs well after Phase 0's first script call,
+so the reader met the crash before the requirement and read it as a broken script
+rather than a wrong interpreter. If `python3 -V` is below 3.12, use `python3.12`
+on PATH or the repo's `.venv/bin/python3.12` for every call in the skill.
 
 ## Why a red main gets its own PR, and the original PR waits
 
