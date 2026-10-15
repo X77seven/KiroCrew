@@ -2,6 +2,8 @@
 
 The cards sit under a heading rendered in ``dashboard.language``, so the prompt
 must carry that tag, and a cached set made for another language is not served.
+When no set is generated the server sends an empty list, which the welcome
+screen answers with its own catalog-localized cards rather than fixed English.
 """
 
 from __future__ import annotations
@@ -148,3 +150,39 @@ async def test_a_slow_regeneration_after_a_language_switch_never_blocks_a_reques
     await cache._task
     assert cache.language == "ja"
     assert cache.suggestions == [{"text": "続ける", "kind": "code"}]
+
+
+# All a new install has to offer: no memory and no sessions, so the context is a
+# time line under the 50-character floor that grounds a model call.
+_THIN_CONTEXT = "## Current Time\nMonday 09:00"
+
+
+@pytest.mark.asyncio
+async def test_a_new_install_is_served_no_cards_in_any_language(monkeypatch) -> None:
+    _configure(monkeypatch, "zh-CN")
+    prompts = _capture_prompts(monkeypatch, json.dumps([{"text": "继续", "kind": "code"}]))
+    monkeypatch.setattr(suggestions, "_build_context", lambda _state: _THIN_CONTEXT)
+
+    body = await _get(_state())
+
+    assert body["suggestions"] == []
+    assert prompts == [], "a context under the floor must not reach the model"
+
+
+async def _call_fails(_sessions, _prompt, **_kw):
+    raise RuntimeError("background session unavailable")
+
+
+async def _reply_unusable(_sessions, _prompt, **_kw):
+    return "Sorry, I have no suggestions right now."
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "oneliner", [_call_fails, _reply_unusable], ids=["call-fails", "reply-unusable"]
+)
+async def test_a_generation_that_yields_nothing_is_an_empty_list(monkeypatch, oneliner) -> None:
+    monkeypatch.setattr(suggestions, "_build_context", lambda _state: _CONTEXT)
+    monkeypatch.setattr(suggestions, "run_bg_oneliner", oneliner)
+
+    assert await suggestions.generate_suggestions(_state(), ui_language="zh-CN") == []

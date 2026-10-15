@@ -36,21 +36,6 @@ _DEFAULT_KIND = "general"
 
 Suggestion = dict[str, str]
 
-# Fallback suggestions when LLM is unavailable or context is empty
-_FALLBACK_SUGGESTIONS: list[Suggestion] = [
-    {"text": "Summarize my recent activity", "kind": "general"},
-    {"text": "Search my code for usage examples", "kind": "research"},
-    {"text": "Summarize this week's chat activity", "kind": "general"},
-    {"text": "Help me write a design doc", "kind": "write"},
-    {"text": "Review my latest changes", "kind": "review"},
-    {"text": "What should I work on next?", "kind": "tasks"},
-]
-
-
-def _fallback() -> list[Suggestion]:
-    return [dict(s) for s in _FALLBACK_SUGGESTIONS]
-
-
 _PROMPT_TEMPLATE = """\
 You are generating contextual prompt suggestions for a developer assistant dashboard.
 
@@ -124,7 +109,7 @@ def _build_prompt(context: str, ui_language: str) -> str:
 class SuggestionsCache:
     """Holds pre-computed suggestions with a timestamp."""
 
-    suggestions: list[Suggestion] = field(default_factory=_fallback)
+    suggestions: list[Suggestion] = field(default_factory=list)
     generated_at: float = 0.0
     # The UI language tag the cached set was generated for. A request whose
     # current tag differs regenerates instead of serving the old language's
@@ -269,14 +254,19 @@ def _redact_suggestions(suggestions: list[Suggestion]) -> list[Suggestion]:
 
 
 async def generate_suggestions(state: DashboardState, *, ui_language: str) -> list[Suggestion]:
-    """Generate suggestions in ``ui_language`` using the background kiro-cli session."""
+    """Generate suggestions in ``ui_language`` using the background kiro-cli session.
+
+    Returns ``[]`` when nothing is generated (too little context, a failed call,
+    an unusable reply). The welcome screen answers an empty list with its own
+    catalog-localized cards, so no fixed English set reaches another language.
+    """
     # _build_context() calls list_sessions() + recent() — O(all sessions) disk IO.
     # Offload to keep the event loop responsive (same pattern as this PR's other
     # two offload sites in sessions.py).
     context = await asyncio.to_thread(_build_context, state)
     if not context or len(context) < 50:
-        logger.debug("Insufficient context for suggestions — using fallback")
-        return _fallback()
+        logger.debug("Insufficient context for suggestions; sending none")
+        return []
 
     prompt = _build_prompt(context, ui_language)
 
@@ -284,13 +274,13 @@ async def generate_suggestions(state: DashboardState, *, ui_language: str) -> li
     # reject + SEL-audit any tool call, drive the event loop, destroy in finally)
     # and its reactive rejected-model fallback — so a partition that does not
     # serve "auto" (e.g. GovCloud) retries once with an advertised model instead
-    # of failing permanently. Best-effort: on any error fall back to the static
-    # suggestions rather than surfacing it.
+    # of failing permanently. Best-effort: on any error send no suggestions
+    # rather than surfacing it.
     try:
         text = await run_bg_oneliner(state.sessions, prompt, sel_source="suggestions", timeout=60)
     except Exception:
         logger.warning("Suggestions generation failed", exc_info=True)
-        return _fallback()
+        return []
 
     suggestions = _parse_suggestions(text)
     if suggestions:
@@ -298,7 +288,7 @@ async def generate_suggestions(state: DashboardState, *, ui_language: str) -> li
         logger.info("Generated %d suggestions", len(suggestions))
         return suggestions
 
-    return _fallback()
+    return []
 
 
 async def refresh_suggestions(state: DashboardState, cache: SuggestionsCache) -> None:

@@ -84,12 +84,12 @@ function SuggestedCards({ setInput }: { setInput: (v: string) => void }) {
   // Built at render (not module scope) so each i18nT() reads the active language;
   // the App remounts on a language switch, re-evaluating these.
   const fallbackSuggestions: Suggestion[] = [
-    { text: i18nT('components.welcomeView.suggestion_pipeline_status'), kind: 'ops' },
-    { text: i18nT('components.welcomeView.suggestion_triage_tickets'), kind: 'tasks' },
+    { text: i18nT('components.welcomeView.suggestion_daily_reminder'), kind: 'schedule' },
+    { text: i18nT('components.welcomeView.suggestion_what_next'), kind: 'tasks' },
     { text: i18nT('components.welcomeView.suggestion_search_code'), kind: 'research' },
     { text: i18nT('components.welcomeView.suggestion_summarize_chat'), kind: 'general' },
     { text: i18nT('components.welcomeView.suggestion_write_design_doc'), kind: 'write' },
-    { text: i18nT('components.welcomeView.suggestion_review_cr'), kind: 'review' },
+    { text: i18nT('components.welcomeView.suggestion_review_changes'), kind: 'review' },
   ]
   // Filter first, then fall back: a payload whose every item is malformed would
   // otherwise leave the grid blank while a curated set exists for exactly that.
