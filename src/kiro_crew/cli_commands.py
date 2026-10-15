@@ -410,8 +410,24 @@ def _spawn(args: argparse.Namespace) -> None:
 
 
 def _spawn_run(args: argparse.Namespace, base: str) -> None:
-    """Spawn a subagent via the dashboard API."""
-    data = json.dumps({"task": args.task}).encode()
+    """Spawn a subagent via the dashboard API.
+
+    ``--agent`` and ``--crew`` travel as the request's ``agent`` and ``crew``
+    fields, the ones the native ``spawn_run`` tool sends, so the gateway's
+    admission resolves and refuses them for both callers alike. A blank name
+    is refused here: the gateway reads an empty field as "no pin", which would
+    run the default the caller did not ask for.
+    """
+    body: dict[str, str] = {"task": args.task}
+    for flag in ("agent", "crew"):
+        name = getattr(args, flag, None)
+        if name is None:
+            continue
+        if not name.strip():
+            print(f"Error: --{flag} needs a name")
+            sys.exit(1)
+        body[flag] = name
+    data = json.dumps(body).encode()
     req = urllib.request.Request(
         f"{base}/api/spawn",
         data=data,

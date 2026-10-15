@@ -1896,6 +1896,8 @@ Examples:
 Examples:
   kirocrew spawn run 'check my open CRs'        # Wait for result
   kirocrew spawn run --async 'analyze logs'     # Fire-and-forget
+  kirocrew spawn run --crew ops 'triage alerts' # Run as crew member 'ops'
+  kirocrew spawn run --agent reviewer 'review'  # Run under agent 'reviewer'
   kirocrew spawn list                           # Show active subagents
 """,
         formatter_class=_fmt,
@@ -1908,6 +1910,19 @@ Examples:
         dest="fire_and_forget",
         action="store_true",
         help="Fire-and-forget (don't wait for result)",
+    )
+    spawn_run.add_argument(
+        "--agent",
+        metavar="NAME",
+        help="Run under this agent template; an unknown name is refused, never replaced",
+    )
+    spawn_run.add_argument(
+        "--crew",
+        metavar="NAME",
+        help=(
+            "Run as this crew member, with its memory store and template; "
+            "an unknown member is refused, never replaced"
+        ),
     )
     spawn_sub.add_parser("list", help="List subagents")
     spawn_parser.add_argument("--port", type=int, default=DASHBOARD_PORT, help="Dashboard port")

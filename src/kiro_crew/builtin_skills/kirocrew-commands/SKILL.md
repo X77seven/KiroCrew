@@ -224,6 +224,8 @@ writes.
 |---------|-------------|
 | `kirocrew spawn run "task"` | Spawn a background subagent (wait for result) |
 | `kirocrew spawn run --async "task"` | Fire-and-forget subagent |
+| `kirocrew spawn run --crew NAME "task"` | Run as a crew member (its memory and template); an unknown name is refused |
+| `kirocrew spawn run --agent NAME "task"` | Run under a named agent template; an unknown name is refused |
 | `kirocrew spawn list` | List active subagents |
 
 ## Cron Jobs

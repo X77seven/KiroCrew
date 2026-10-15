@@ -3296,7 +3296,12 @@ Delegation guidance is injected from `src/kiro_crew/config/prompt.md`; no dedica
 
 Posts to the dashboard API on the configured `--port`. By default it polls until
 the run finishes and prints the result; `--async` returns immediately with the
-subagent ID. `kirocrew spawn list` lists current runs.
+subagent ID. `--crew NAME` runs the task as that crew member (its memory store and
+template) and `--agent NAME` under that agent template; they are sent as the same
+`crew` / `agent` request fields `spawn_run` uses, so an unknown name is refused by
+the gateway (`unknown_member`, `agent_not_found`) and the CLI exits 1 rather than
+running the default. A blank name is refused before any request. `kirocrew spawn
+list` lists current runs.
 
 ### MCP Tool: `spawn_run`
 
