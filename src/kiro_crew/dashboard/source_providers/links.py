@@ -193,6 +193,8 @@ def _jira_ref(host: str, path: str) -> SourceRef:
 # the UI tab the link was copied from. Split on "/" and matched from the end, so
 # no pattern backtracks over an operator-chosen context path.
 _BITBUCKET_SERVER_TABS = frozenset({"overview", "diff", "commits", "builds"})
+# A URL path separator, the same on every OS.
+_URL_PATH_SEPARATOR = "/"
 _BITBUCKET_SERVER_KEY_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,127}")
 _BITBUCKET_SERVER_SLUG_RE = re.compile(r"[A-Za-z0-9._-]{1,128}")
 _BITBUCKET_SERVER_CONTEXT_SEGMENT_RE = re.compile(r"[A-Za-z0-9._~-]{1,64}")
@@ -211,7 +213,7 @@ def _bitbucket_server_ref(host: str, path: str) -> SourceRef:
     and every REST call is built under the same context path the link used.
     The canonical URL drops the UI tab suffix.
     """
-    segments = path.split("/")
+    segments = path.split(_URL_PATH_SEPARATOR)
     if len(segments) > 1 and segments[-1].lower() in _BITBUCKET_SERVER_TABS:
         segments = segments[:-1]
     if (

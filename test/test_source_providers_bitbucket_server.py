@@ -50,8 +50,8 @@ def _cold_allowlists(_floor_monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def _isolated_caches(monkeypatch):
-    monkeypatch.setattr(source, "_sel", lambda: MagicMock())
+def _isolated_caches(_floor_monkeypatch):
+    _floor_monkeypatch.setattr(source, "_sel", lambda: MagicMock())
     for name in (
         "_CACHE",
         "_FULL_FETCH_INFLIGHT",
@@ -59,7 +59,7 @@ def _isolated_caches(monkeypatch):
         "_FULL_FETCH_GENERATIONS",
         "_CHECKS_FETCH_INFLIGHT",
     ):
-        monkeypatch.setattr(source, name, {})
+        _floor_monkeypatch.setattr(source, name, {})
 
 
 @pytest.fixture
@@ -242,6 +242,7 @@ class _Instance:
     def __init__(self, routes: dict[str, tuple[int, Any]]) -> None:
         self.routes = routes
         self.requests: list[dict[str, Any]] = []
+        self.on_get: Any = None
 
     def session(self, *args: Any, headers: dict[str, str] | None = None, **kwargs: Any):
         instance = self
@@ -257,6 +258,8 @@ class _Instance:
                 instance.requests.append(
                     {"url": url, "headers": dict(headers or {}), "redirects": allow_redirects}
                 )
+                if instance.on_get is not None:
+                    instance.on_get(url)
                 status, document = instance.routes.get(url, (404, {"errors": []}))
                 return _Response(status, document)
 
@@ -492,12 +495,41 @@ async def test_without_a_token_a_denied_read_names_the_secret_to_store(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("status", [401, 403])
+async def test_a_refused_token_names_the_secret_to_replace(
+    config_file, instance, vault, status
+) -> None:
+    vault[bitbucket_server.host_token_name(HOST)] = TOKEN_VALUE
+    instance.routes[PR_API] = (status, {"errors": []})
+    async with TestClient(TestServer(_app())) as client:
+        resp = await client.post("/api/source/pull-request", json={"url": PR_URL})
+        error = (await resp.json())["error"]
+    assert f"Replace {bitbucket_server.GLOBAL_TOKEN_NAME} in Settings > Secrets" in error
+
+
+@pytest.mark.asyncio
 async def test_a_redirect_is_reported_not_followed(config_file, instance, vault) -> None:
     instance.routes[PR_API] = (302, {})
     async with TestClient(TestServer(_app())) as client:
         resp = await client.post("/api/source/pull-request", json={"url": PR_URL})
         assert resp.status == 503
         assert "HTTP 302" in (await resp.json())["error"]
+    assert [request["url"] for request in instance.requests] == [PR_API]
+
+
+@pytest.mark.asyncio
+async def test_a_host_removed_mid_fetch_receives_no_further_request(
+    config_file, instance, vault, monkeypatch
+) -> None:
+    vault[bitbucket_server.host_token_name(HOST)] = TOKEN_VALUE
+
+    def revoke_on_primary_read(url: str) -> None:
+        if url == PR_API:
+            monkeypatch.setattr(hosts, "_bitbucket_server_hosts_snapshot", frozenset())
+
+    instance.on_get = revoke_on_primary_read
+    async with TestClient(TestServer(_app())) as client:
+        await client.post("/api/source/pull-request", json={"url": PR_URL})
     assert [request["url"] for request in instance.requests] == [PR_API]
 
 
@@ -511,6 +543,39 @@ async def test_a_failed_secondary_read_marks_its_section_partial(
         payload = await resp.json()
     assert resp.status == 200
     assert payload["comments"] == []
+    assert payload["partialSections"] == ["review discussions"]
+
+
+@pytest.mark.asyncio
+async def test_a_review_the_comment_cap_drops_marks_discussions_partial(
+    config_file, instance, vault
+) -> None:
+    # A complete page whose comments fill the cap before a later approval.
+    filler = [
+        {
+            "id": 2000 + index,
+            "action": "COMMENTED",
+            "createdDate": _ms(2),
+            "comment": {"id": 3000 + index, "text": "note", "author": {"displayName": "Dev"}},
+        }
+        for index in range(bitbucket_server._MAX_COMMENTS)
+    ]
+    approval = {
+        "id": 1999,
+        "action": "APPROVED",
+        "createdDate": _ms(3),
+        "user": {"name": "rev1", "displayName": "Reviewer One"},
+    }
+    instance.routes[f"{PR_API}/activities?limit=100"] = (
+        200,
+        {"isLastPage": True, "values": [approval, *reversed(filler)]},
+    )
+    async with TestClient(TestServer(_app())) as client:
+        resp = await client.post("/api/source/pull-request", json={"url": PR_URL})
+        payload = await resp.json()
+    assert resp.status == 200
+    assert len(payload["comments"]) == bitbucket_server._MAX_COMMENTS
+    assert all(row["kind"] != "review" for row in payload["comments"])
     assert payload["partialSections"] == ["review discussions"]
 
 
@@ -552,6 +617,17 @@ def test_the_single_host_token_serves_only_a_lone_listed_host(monkeypatch, vault
     assert bitbucket_server._resolve_token(HOST) == ""
     vault[bitbucket_server.host_token_name(HOST)] = "per-host"
     assert bitbucket_server._resolve_token(HOST) == "per-host"
+
+
+def test_with_two_hosts_the_setup_guidance_says_the_shared_token_stopped_applying(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        hosts, "_bitbucket_server_hosts_snapshot", frozenset({HOST, "other.acme.example"})
+    )
+    guidance = bitbucket_server._setup_guidance(HOST)
+    assert bitbucket_server.host_token_name(HOST) in guidance
+    assert f"{bitbucket_server.GLOBAL_TOKEN_NAME} applies only while one host is listed" in guidance
 
 
 @pytest.mark.asyncio
