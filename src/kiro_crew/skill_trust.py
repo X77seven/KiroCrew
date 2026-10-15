@@ -380,7 +380,7 @@ def is_key_trusted(project_key: str | None) -> bool:
     the operator reviewed, not just its name, so the instance has to be read to be
     compared -- see :func:`_instance_identity` for what a path-only grant lets
     through. One extra ``stat`` per key derivation, not per skill; the caller in
-    ``skills.py`` already pays a ``realpath`` beside it.
+    ``skills_body_reads.py`` already pays a ``realpath`` beside it.
 
     Fails CLOSED on a row with no recorded identity (one written before grants
     carried one) and on a directory that can no longer be read. Neither can

@@ -1461,7 +1461,7 @@ _REDACTION_SINKS: tuple[tuple[str, str, str], ...] = (
     ),
     (
         "Auto-skill pending detail / promotion",
-        "skills.py",
+        "skills_review.py",
         "LLM-authored auto-skill candidate content (SKILL.md, scripts, and nested "
         ".meta.json values/keys) is redacted at the pending detail-read choke "
         "before it is returned by the dashboard skills API, and again in-place "

@@ -164,7 +164,6 @@
 2648 src/kiro_crew/session_map.py
 6051 src/kiro_crew/session_pid.py
 5246 src/kiro_crew/session_storage.py
-6254 src/kiro_crew/skills.py
 3685 src/kiro_crew/slack/events.py
 7269 src/kiro_crew/slack/gateway.py
 3789 src/kiro_crew/slack/handler.py

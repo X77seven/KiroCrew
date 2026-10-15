@@ -189,7 +189,7 @@ class TestIsSensitiveResolvedPath:
 _EXPECTED_GATE_CALL_SITES: dict[str, int] = {
     # ``_iter_skill_files``: one check per directory (prune) and per SKILL.md
     # (skip), each against the ``realpath`` the walk computed for loop detection.
-    "kiro_crew/skills.py": 2,
+    "kiro_crew/skills_discovery.py": 2,
     # ``_complete_path_listing`` / ``_scan_completion_dir``: the project root, the
     # directory a `./` completion token named, and every entry that directory
     # offers. Both halves of the contract hold. The argument is canonical without a

@@ -164,7 +164,7 @@ already set the precedent the #14169 ruling asked for:
 - **Skills →** the skill-root enumerators already form a pluggable, namespaced
   list: `_edition_skill_roots()` / `_canonical_skill_roots()` in
   `src/kiro_crew/dashboard/handlers/_shared.py` and
-  `_trusted_skill_roots()` in `src/kiro_crew/skills.py`. App skills are
+  `_trusted_skill_roots()` in `src/kiro_crew/skills_discovery.py`. App skills are
   already namespaced (`{app}/{skill}`) by `_register_skills` in
   `src/kiro_crew/apps/bridges.py`. An **enabled** Power's skills attach as a
   `power-<slug>/` root and the catalog/index (`skill_runtime/catalog.py`,

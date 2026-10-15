@@ -288,7 +288,7 @@ def _shards_in_window(directory: Path, days: float, until: float | None = None) 
         return []
     # Security: telemetry.local_dir is user-configurable (and
     # expanduser'd), so refuse to read a metrics dir that resolves to a
-    # sensitive path (~/.aws, ~/.ssh, ...). Mirrors skills.py's use of
+    # sensitive path (~/.aws, ~/.ssh, ...). Mirrors skills_body_reads.py's use of
     # validate_file_path (resolves symlinks + is_sensitive_path check).
     if validate_file_path(str(directory)) is None:
         logger.warning("telemetry metrics dir failed sensitive-path check; skipping read")

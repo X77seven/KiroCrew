@@ -1,8 +1,8 @@
 """Composition contract between ``SkillsLoader`` and ``skill_runtime``.
 
-``kiro_crew.skills`` keeps the loader's state, its locks and the code repository
-guards pin to ``skills.py`` by path, and delegates the rest of its rules to the
-modules under ``kiro_crew.skill_runtime``. What this file pins is what callers of
+``kiro_crew.skills`` keeps the loader's state and its locks, binds the code repository
+guards pin by path from its ``skills_*`` owner modules, and delegates the rest of its
+rules to the modules under ``kiro_crew.skill_runtime``. What this file pins is what callers of
 the loader observe independently of where each rule lives:
 
 * the class keeps every member it had, with the same kind and signature, and the
@@ -16,7 +16,7 @@ the loader observe independently of where each rule lives:
   anchored on their own file;
 * the source-keyed guards stay satisfied by construction: no runtime module holds
   a link-screen site, a sensitive-resolved-path call or a redactor call, so the
-  registries naming ``skills.py`` still describe the code, and the ``repo_scope``
+  registries naming the ``skills_*`` owners still describe the code, and the ``repo_scope``
   normalisation rule is re-applied to the moved read sites;
 * the one-slug-space allocator, the descriptor-pinned pending read, the HTML
   body refusal and the usage-ledger alias fold behave as the facade documents them.
@@ -67,7 +67,7 @@ RUNTIME_MODULES = frozenset(
 #: Facade bindings that tests REBIND to change what the loader does, and which
 #: moved code consumes. Runtime code reads each through ``kiro_crew.skills`` at
 #: call time. ``os`` is rebound too, but only around ``installed_skill_currency``,
-#: which stays in the facade; runtime code reads ``os`` directly.
+#: which lives in ``skills_builtin_provenance``; runtime code reads ``os`` directly.
 FACADE_SEAMS = frozenset(
     {
         "PINNED_SKILL_BODIES_CAP",
@@ -916,7 +916,7 @@ def _repo_scope_violations(source: str) -> list[str]:
     """``test_frontmatter``'s repo_scope normalisation rule, applied to any source.
 
     Every read that feeds the gate strips the value, and every gate call passes one
-    of the normalised spellings. The read-only guard scans ``skills.py`` by path;
+    of the normalised spellings. The read-only guard scans the ``skills_*`` owners by path;
     this carries the same rule to the read sites that moved.
     """
     reads = re.findall(r'"repo_scope":\s*meta\.get\("repo_scope"[^\n]*', source)
@@ -929,10 +929,11 @@ def _repo_scope_violations(source: str) -> list[str]:
 
 
 class TestSourceKeyedGuards:
-    """Registries that name ``skills.py`` stay true because nothing they count moved."""
+    """Registries that name the ``skills_*`` owners stay true because no runtime module
+    holds what they count."""
 
     def test_no_runtime_module_screens_a_path_for_links(self) -> None:
-        """The link-screen baseline keys its sites to ``skills.py``; a screen in a
+        """The link-screen baseline keys its sites to the ``skills_*`` owners; a screen in a
         runtime module would be a site that baseline cannot name."""
         for stem, source in _runtime_sources().items():
             assert [name for _line, name in _called_names(source) if name in SCREENS] == [], stem
@@ -944,12 +945,12 @@ class TestSourceKeyedGuards:
         ]
 
     def test_no_runtime_module_calls_the_resolved_path_gate(self) -> None:
-        """The gate's reviewed caller list counts two calls in ``skills.py``."""
+        """The gate's reviewed caller list counts two calls in ``skills_discovery.py``."""
         for stem, source in _runtime_sources().items():
             assert "is_sensitive_resolved_path" not in [name for _l, name in _called_names(source)]
 
     def test_no_runtime_module_calls_a_redactor(self) -> None:
-        """Pending detail and promotion stay in ``skills.py``, the module the
+        """Pending detail and promotion live in ``skills_review.py``, the module the
         redaction-sink registry names; a redactor call here would be an unregistered
         sink, and even prose spelling one trips the registry's drift guard."""
         for stem, source in _runtime_sources().items():

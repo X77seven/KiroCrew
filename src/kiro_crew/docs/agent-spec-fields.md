@@ -520,7 +520,7 @@ prompt — and only with no project supplied does it fall back to three levels a
 the spec file (`<project>/.kiro/agents/foo.json` → `<project>`).
 `agent_skill_globs` is what the rest of the product asks.
 
-When a builtin skill moves (`_RELOCATED_SKILLS` in `skills.py`), its old
+When a builtin skill moves (`_RELOCATED_SKILLS` in `skills_builtin_sync.py`), its old
 `SKILL.md` is set aside, so a mapping of the old path would load nothing.
 `agent.migrate_relocated_skill_uris` runs on every agent-config rebuild and
 rewrites such a `~/` or absolute `skill://` entry in each JSON spec under

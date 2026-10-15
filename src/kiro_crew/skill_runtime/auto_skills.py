@@ -6,7 +6,7 @@ space with one allocator: ``create_auto_skill``, ``stage_skill_candidate`` and
 ``restore_auto_skill`` each test a name with ``_auto_slug_available`` under
 ``_auto_slug_claim_lock``. Also stages candidates and removes them from the queue.
 
-Reading, judging and approving a queued candidate stays in the facade, which is
+Reading, judging and approving a queued candidate lives in ``kiro_crew.skills_review``,
 the registered redaction sink for pending candidate content.
 """
 
