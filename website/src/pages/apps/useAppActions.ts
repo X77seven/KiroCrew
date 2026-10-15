@@ -19,15 +19,18 @@ import { i18nT } from '../../i18n/t'
 import { recordEvent } from '../../rum'
 import { isSessionApprovalConsentRequiredError, useTrustGate } from '../../components/appstore/TrustAppModal'
 import type { TrustAppTarget } from '../../components/appstore/TrustAppModal'
+import { consentTierFor, registryTierFor } from '../../components/appstore/registryTier'
 import type { AppsData } from './useAppsData'
 
 type AppActionsInput = Pick<
   AppsData,
-  'apps' | 'browseApps' | 'appsError' | 'registryError' | 'announceAppsChanged'
+  'apps' | 'browseApps' | 'appsError' | 'registryError' | 'announceAppsChanged' | 'sources'
+  | 'registriesUnknown'
 >
 
 export function useAppActions({
-  apps, browseApps, appsError, registryError, announceAppsChanged,
+  apps, browseApps, appsError, registryError, announceAppsChanged, sources,
+  registriesUnknown,
 }: AppActionsInput) {
   const navigate = useNavigate()
   const [error, setError] = useState('')
@@ -52,7 +55,8 @@ export function useAppActions({
 
   // Provenance the consent modal shows. For an installed app, the server-bound
   // source wins over today's registry row; for an install prompt, the registry's
-  // server-resolved clone target is the authority.
+  // server-resolved clone target is the authority. The listing registry's review
+  // tier rides along so the gate can say when that listing was not vetted.
   const trustTarget = (name: string): TrustAppTarget => {
     const row = browseApps.find(a => a.name === name)
     const installed = apps.find(a => a.name === name)
@@ -63,6 +67,9 @@ export function useAppActions({
       origin: installed.origin,
       _registry: row?._registry,
       sessionApproval: installed.manifest.permissions?.sessionApproval === true,
+      // A local install has no listing, so it carries no registry claim even
+      // when a registry row happens to share its name (the detail page's rule).
+      ...(installed.origin === 'local' ? {} : registryTierFor(row?._registry, sources)),
     }
     if (row) return {
       name: row.name,
@@ -71,6 +78,7 @@ export function useAppActions({
       origin: row.origin,
       _registry: row._registry,
       sessionApproval: row.manifest?.permissions?.sessionApproval === true,
+      ...registryTierFor(row._registry, sources),
     }
     return { name }
   }
@@ -92,8 +100,27 @@ export function useAppActions({
 
   const trust = useTrustGate(runEnable)
 
+  // What the consent dialog renders: the gate's target with its registry badge
+  // and review tier re-read at RENDER time, as the detail page does. `trust.open`
+  // snapshots the target when a refusal lands, and a refusal can land before
+  // `listRegistries` resolves; a tier read then would stay missing for the whole
+  // dialog. While that list is loading or failed, the tier is unknown, so
+  // `consentTierFor` shows the not-vetted box rather than read the listing as
+  // vetted. Only display fields are replaced: the server-issued
+  // `trustRepository` proof and the retry flags stay the gate's.
+  const consentTarget = ((): TrustAppTarget | null => {
+    const t = trust.target
+    if (!t) return null
+    const { registryReview: _r, registryTrust: _t, ...base } = t
+    // A local install has no listing, so it carries no registry claim even when
+    // a registry row shares its name (the same rule as `trustTarget`).
+    if (apps.find(a => a.name === t.name)?.origin === 'local') return base
+    const registry = browseApps.find(a => a.name === t.name)?._registry ?? t._registry
+    return { ...base, _registry: registry, ...consentTierFor(registry, sources, registriesUnknown) }
+  })()
+
   return {
     setError, displayError, dismissError,
-    openDetail, getApp, updateApp, trustTarget, runEnable, trust,
+    openDetail, getApp, updateApp, trustTarget, consentTarget, runEnable, trust,
   }
 }
