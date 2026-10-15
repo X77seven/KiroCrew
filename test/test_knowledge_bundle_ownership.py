@@ -724,7 +724,10 @@ class TestTheSameDocumentExceptionCoversEverySite:
 
     @staticmethod
     def _store_source():
-        return Path(store_module.__file__).read_text(encoding="utf-8")
+        import importlib
+
+        family = (store_module, *map(importlib.import_module, store_module._STORE_OWNERS))
+        return "\n".join(Path(module.__file__).read_text(encoding="utf-8") for module in family)
 
     def _gate_sites(self):
         tree = ast.parse(self._store_source())

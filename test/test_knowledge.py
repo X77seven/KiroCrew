@@ -4458,7 +4458,9 @@ class TestCjkKeywordRecall:
 
         from kiro_crew.knowledge import store as store_mod
 
-        module_writes = len(re.findall(r"INSERT INTO items_fts", inspect.getsource(store_mod)))
+        family = (store_mod, *map(importlib.import_module, store_mod._STORE_OWNERS))
+        source = "\n".join(inspect.getsource(module) for module in family)
+        module_writes = len(re.findall(r"INSERT INTO items_fts", source))
         owned = sum(
             len(re.findall(r"INSERT INTO items_fts", inspect.getsource(fn)))
             for fn in (
@@ -4486,7 +4488,8 @@ class TestCjkKeywordRecall:
 
         from kiro_crew.knowledge import store as store_mod
 
-        source = inspect.getsource(store_mod)
+        family = (store_mod, *map(importlib.import_module, store_mod._STORE_OWNERS))
+        source = "\n".join(inspect.getsource(module) for module in family)
         bare = re.findall(r"""execute\(\s*["']BEGIN["']\s*\)""", source)
         assert bare == [], f"{len(bare)} deferred BEGIN(s) in store.py; use BEGIN IMMEDIATE"
         assert 'execute("BEGIN IMMEDIATE")' in source

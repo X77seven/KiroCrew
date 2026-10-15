@@ -122,7 +122,17 @@ The remaining gap is therefore an **A/B task-lift harness** (Tier 2), plus a flo
 | `knowledge/agent_fetch.py` | `fetch_url_content()` — agent-assisted URL fetch over the pool (tools opt-in via `KIROCREW_KNOWLEDGE_FETCH_TOOLS`) |
 | `knowledge/chunker.py` | `HeadingAwareChunker` — text/markdown/code/slide chunking |
 | `knowledge/embedder.py` | `InProcessEmbedder` — embedding in-process via the shared `EmbeddingBackend` (vendored llama-cpp runtime, no server and no HTTP hop); owns `embed_signature` (per-item vector-space identity) |
-| `knowledge/store.py` | `KnowledgeStore` — SQLite schema, items/entities/graph, FTS5 sync |
+| `knowledge/store.py` | `KnowledgeStore` — the import path of the store: the per-thread connection, construction and damaged-file recovery, the ingestion gate, and the class that binds its methods from the `store_parts` owners below |
+| `knowledge/store_parts/entity_graph.py` | entity, relation and mention rows, and the in-memory `SimpleDiGraph`: first load, rebuild-and-swap, neighbourhood reads |
+| `knowledge/store_parts/fulltext_index.py` | `items_fts`: its row writes (`_fts_index` / `_fts_unindex`), its term representation (`FTS_INDEX_VERSION`), the version-gated rebuild, `search_items_fts` |
+| `knowledge/store_parts/source_rows.py` | source rows: registration, the properties blob and its one-status rule, auto-registration retirement |
+| `knowledge/store_parts/item_ownership.py` | which sources hold an item (`source_locations`) and which document row owns it (`_DOC_STATE_TABLES`): adoption, detach, claim release |
+| `knowledge/store_parts/item_rows.py` | item rows and every delete: one item, a batch, a whole source |
+| `knowledge/store_parts/schema_migrations.py` | the DDL, the per-open column migrations, the search-only indexes and the vector-generation triggers |
+| `knowledge/store_parts/maintenance_sweeps.py` | the post-bind sweeps: orphan sources and entities, interrupted agent-ingest residue |
+| `knowledge/store_parts/content_stats.py` | read-only library statistics (`aggregate_stats`, `get_stats`) |
+| `knowledge/store_parts/bundle_transfer.py` | `.knowledge` export and import, and `KnowledgeBundleError` for malformed input |
+| `knowledge/store_parts/bundle_ownership.py` | which of a bundle's ownership rows an import restores and which items it withholds |
 | `knowledge/retrieval.py` | `HybridRetriever` — FTS5 + graph + vector search fused with RRF |
 | `knowledge/ingestion.py` | `IngestionPipeline` — read → chunk → extract → store orchestration |
 | `knowledge/dedup.py` | Cross-source deduplication |
@@ -131,6 +141,30 @@ The remaining gap is therefore an **A/B task-lift harness** (Tier 2), plus a flo
 | `mcp_core.py` | Cached `(KnowledgeStore, embedder)` accessor the tool reads |
 | `dashboard/handlers/knowledge.py` | Dashboard Knowledge-tab API (sources, ingest, search, source-scoped list + `/source-counts`) |
 | `agent_materialization/service_agents.py:_install_knowledge_agent` | Installs the `kirocrew-knowledge` kiro-cli agent used by the pool |
+
+`KnowledgeStore`'s behaviour lives in the `knowledge/store_parts/` owners in the table above,
+one responsibility each. A member's body is a module-level function there whose first
+parameter is `self` (annotated `KnowledgeStore` for type checkers only), and the class binds
+it by name under one comment header per owner (`add_entity = _entity_graph.add_entity`,
+`staticmethod(...)` for a static method). Every member therefore stays an attribute of the one
+class, so a patch of a method on the class or on a store reaches every caller, and every field
+stays on the instance; each owner's docstring names the fields its members write and read.
+A bound member's `__module__` names its owner and its `__qualname__` is the bare function
+name; nothing reads either. A class an owner defines keeps that owner as its `__module__`
+(`SimpleDiGraph`, its two views, `SourceContentStats`, `ContentStats`), except
+`KnowledgeBundleError`, which carries `kiro_crew.knowledge.store` so a traceback names it
+by its import path. `store.py` keeps the
+constructor, the connection, the properties, the gate delegations and the two static methods
+that name `KnowledgeStore`, and re-exports every name callers import from it (its own
+standard-library and typing imports aside). It is a plain facade: an owner reads its globals in its own namespace, so a name a
+test patches through `kiro_crew.knowledge.store` must be one only `store.py` reads.
+`_STORE_OWNERS` lists the owners lowest layer first; an owner imports only owners before it and
+never `store.py` at run time, and an owner that logs does so under the `kiro_crew.knowledge.store`
+logger.
+`test/test_store_parts_bindings.py` pins the member inventory, the binding, the layering and
+that patch rule. A new store method goes to the owner whose row names its responsibility, with
+one binding line under that owner's header in the class and a row in that test's member
+inventory.
 
 ## Constants
 
@@ -484,7 +518,7 @@ Entity extraction (`EntityExtractor`) and internal-URL fetch (`agent_fetch.fetch
 
 `HybridRetriever.search(query, limit)` runs three legs and fuses them with Reciprocal Rank Fusion.
 
-**Store (`KnowledgeStore`, `store.py`)** — SQLite (prefers `pysqlite3`, falls back to stdlib `sqlite3`), WAL journal, `foreign_keys=ON`. Items live in `items` (with an `embedding BLOB` and `status`), keyword search is served by the FTS5 virtual table `items_fts(title, content, tags, content=items, content_rowid=rowid)`, and the entity graph is an in-memory `SimpleDiGraph` (a minimal networkx-free replacement). The store keeps `items_fts` in sync on every insert/update/delete of the FTS-backed columns.
+**Store (`KnowledgeStore`, `store.py`; FTS writes in `store_parts/fulltext_index.py`, the graph in `store_parts/entity_graph.py`)** — SQLite (prefers `pysqlite3`, falls back to stdlib `sqlite3`), WAL journal, `foreign_keys=ON`. Items live in `items` (with an `embedding BLOB` and `status`), keyword search is served by the FTS5 virtual table `items_fts(title, content, tags, content=items, content_rowid=rowid)`, and the entity graph is an in-memory `SimpleDiGraph` (a minimal networkx-free replacement). The store keeps `items_fts` in sync on every insert/update/delete of the FTS-backed columns.
 
 - **Keyword leg (`_keyword_search`)** — FTS5 `MATCH` over `items_fts`, ordered by `rank`. `_sanitize_fts5_query` double-quotes each token (doubling internal quotes) so user input never contributes FTS5 operators (parameterized quoting), drops `_STOPWORDS`, and OR-joins the remainder so a natural-language query does not require every literal token to match. An all-stopword query falls back to the raw tokens rather than dropping the leg.
 
@@ -812,8 +846,8 @@ a plan: entities connect only through shared names, so `auth layer` and
 calls it; and nothing computes entity communities, so a cluster of related
 entities has no representation a query can select on.
 
-Writers: `knowledge/store.py` (the `entities`, `entity_relations` and `mentions`
-tables, the in-memory `SimpleDiGraph`, `items.embedding`, the signature-gated
-re-embed), `knowledge/extractor.py` (per-chunk entity and relation extraction),
+Writers: `knowledge/store_parts/entity_graph.py` (the `entities`, `entity_relations`
+and `mentions` tables, the in-memory `SimpleDiGraph`), `knowledge/store_parts/item_rows.py`
+(`items.embedding`, which the signature-gated re-embed rewrites), `knowledge/extractor.py` (per-chunk entity and relation extraction),
 `knowledge/ingestion.py` (chunking, dedup, the embedding pass),
 `knowledge/retrieval.py` (the three search legs and their RRF fusion).
