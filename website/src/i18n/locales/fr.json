@@ -13438,7 +13438,9 @@
       "kasBundleCard": {
         "toggle_label": "Utiliser le moteur KAS intégré",
         "toggle_description": "Exécute la version du moteur KAS testée avec cette version de {{productName}}, sans installer kiro-cli à part. Se connecte avec le compte Kiro ci-dessus. Le changement prend effet au redémarrage de {{productName}}.",
-        "installed": "Moteur intégré {{version}} installé",
+        "installed": "Moteur intégré {{version}} (installé par toi)",
+        "installed_bundled": "Moteur intégré {{version}} (fourni avec l'application)",
+        "off_note": "Moteur intégré inutilisé tant que cet interrupteur est désactivé.",
         "saved_restart_pending": "Enregistré. {{productName}} tourne encore avec l'ancienne route du moteur ; le changement se fera au redémarrage : Paramètres → À propos → Redémarrer la passerelle.",
         "not_installed": "Le moteur intégré {{version}} n'est pas encore installé.",
         "install": "Installer le moteur KAS",

@@ -135,8 +135,18 @@ export function KasBundleCard() {
           <>
             <CheckCircle2 className="lucide-inline text-ok" aria-hidden="true" />
             <span>
-              {i18nT('pages.developer.kasBundleCard.installed', { version: installed.version })}
+              {installed.bundled
+                ? i18nT('pages.developer.kasBundleCard.installed_bundled', {
+                    version: installed.version,
+                  })
+                : i18nT('pages.developer.kasBundleCard.installed', { version: installed.version })}
             </span>
+            {/* A green line under an OFF switch reads as "already running" without this. */}
+            {!status.enabled && (
+              <span className="text-muted" data-testid="kas-bundle-off-note">
+                {i18nT('pages.developer.kasBundleCard.off_note')}
+              </span>
+            )}
           </>
         ) : (
           <>
