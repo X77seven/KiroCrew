@@ -2149,7 +2149,7 @@ file-tree-container{
 .edit-grow>textarea{width:100%;min-width:0}
 
 /* Pinned-prompt stand-in. While a user prompt is pinned, its transcript row is
-   `visibility: hidden` (ChatPage's row wrapper, VirtualTranscript, ChatMessageList)
+   `visibility: hidden` (ChatTranscriptView's row wrapper, VirtualTranscript, ChatMessageList)
    and the PinnedPrompt card is drawn in its place — but the card copies only the
    BUBBLE, and the row also carries the message's action strip (copy, copy link,
    pin, edit, timestamp). Visibility is inherited, so a `visible` descendant of the
@@ -3139,7 +3139,7 @@ body.mc-focus-mode.mc-focus-rail .focus-chrome-rail{
    `hover:bg-bg-hover` still wins on hover. kiro-light steps the card back to
    --panel (.sidebar-inner above), so the pinned row follows it. A host that
    repaints the card sets --folder-row-sticky-bg to the same surface (the
-   /embed/sessions wrapper in ChatPage paints it --bg).
+   /embed/sessions wrapper in SessionsSidebarChrome paints it --bg).
    --folder-row-sticky-h is the header's height, which is what a nested header
    is offset by per depth, so the row is held to it: a default-agent badge or
    the rename input would otherwise grow the row 4-6px and the pinned header
@@ -3668,7 +3668,7 @@ body.mc-focus-mode.mc-focus-rail .focus-chrome-rail{
  * faint line a few pixels below the pane -- read as a reflection of the pane's
  * own bottom edge. 6px covers the pane's hairline and the start of its shadow
  * (which paints OVER this layer, see below) and nothing else. It is a `::before` at `z-index: -1` in the dock's
- * input-area stacking context (ChatPage's `relative z-10 dock-inert` wrapper),
+ * input-area stacking context (ComposerDockView's `relative z-10 dock-inert` wrapper),
  * NOT in one of the shelf's own: that puts the fade BEHIND the pane and its
  * `.glass-shadow`, so the shadow falls onto the solid strip the way it fell
  * onto the page, instead of being whitened out part-way down and leaving a
@@ -3702,7 +3702,7 @@ body.mc-focus-mode.mc-focus-rail .focus-chrome-rail{
 /* A pending approval swaps the pane's shadow for the warm glow. */
 .glass-shadow.approval-glow { box-shadow: var(--approval-shadow); }
 
-/* The composer dock's two wrapper boxes (ChatPage.tsx) span the pane but hold
+/* The composer dock's two wrapper boxes (ComposerDockView.tsx) span the pane but hold
    nothing of their own: every child is its own content column. The wrappers
    pass input through and each child catches it, so the empty width beside the
    column, and the scrollbar gutter, reach the transcript underneath. One rule
@@ -3710,7 +3710,7 @@ body.mc-focus-mode.mc-focus-rail .focus-chrome-rail{
    The status stack is itself a scroll box (`max-h-[50svh] overflow-y-auto`):
    while it overflows, its own scrollbar has to be a hit target, and a
    scrollbar belongs to the box, not to a child, so the dock's measure marks
-   the overflowing stack (`data-overflowing`, ChatPage.tsx) and it catches input
+   the overflowing stack (`data-overflowing`, useChatPageTranscriptController.tsx) and it catches input
    as a whole for exactly that stretch. */
 .dock-inert{pointer-events:none}.dock-inert>*{pointer-events:auto}
 .dock-inert[data-overflowing="true"]{pointer-events:auto}

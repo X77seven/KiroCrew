@@ -108,7 +108,7 @@ export const LOCATIONS = {
       },
     ],
   },
-  // The chat pane's empty state (ChatPage), drawn only while no session is
+  // The chat pane's empty state (ChatEmptyState), drawn only while no session is
   // open there: a different site, label and host from the sidebar button.
   'chat.start-new-chat': {
     kind: 'button',
@@ -211,7 +211,7 @@ export const LOCATIONS = {
       requires: [{ kind: 'viewport', value: 'desktop' }, { kind: 'condition', id: 'session_open' }],
     }],
   },
-  // The chat header's side-panel opener (ChatPage), drawn only while the panel
+  // The chat header's side-panel opener (ChatTitleOverlay), drawn only while the panel
   // is closed; the panel's own header carries the close button. Desktop: the
   // phone's top bar replaces this header.
   'chat.side-panel-open': {

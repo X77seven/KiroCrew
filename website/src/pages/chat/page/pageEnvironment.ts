@@ -79,7 +79,7 @@ export function useChatPageEnvironment({
    *
    * `mobileNavRail` is the shell's main navigation as an icon rail, rendered
    * beside the sessions pane inside this page's ONE drawer (see the
-   * OverlayDrawer ChatPage renders). `null` off the phone chat route.
+   * OverlayDrawer SessionsSidebarChrome renders). `null` off the phone chat route.
    */
   const singleBar = isMobile && !embedded && !popout
   const topbarSlot = useShellSlot('mobile-topbar-slot', singleBar)

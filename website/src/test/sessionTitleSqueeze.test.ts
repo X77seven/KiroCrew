@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 // The title cluster moved into the shared SessionTitleControl (also mounted in
 // every split-view pane header); the row and its trailing controls stay in
-// ChatPage. The contract spans both files.
+// ChatTitleOverlay. The contract spans both files.
 // The page composes owners under pages/chat/page/ (and its useChatPage* siblings), so the pins read the page, those owners and the control.
 const PAGES_DIR = join(__dirname, '..', 'pages')
 const OWNER_DIR = join(PAGES_DIR, 'chat', 'page')

@@ -405,7 +405,7 @@ export function useTranscriptPaging({
     estimateRowTopRef.current = virt.estimateRowTop
   })
 
-  // Legacy aliases so ChatPage's JSX keeps reading the same names.
+  // Legacy aliases so ChatTranscriptView's JSX keeps reading the same names.
   const visibleDisplayItems = virt.virtualItems
   // A window replacement can commit after the scroll frame that requested it.
   // Re-read geometry from the committed rows so an incomplete old window cannot

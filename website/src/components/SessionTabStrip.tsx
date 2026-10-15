@@ -207,7 +207,7 @@ export default function SessionTabStrip({ tabs, activeKey, cue, connected = true
   if (tabs.length < 2) return null
 
   return (
-    // The bottom divider belongs to the shell that mounts the strip (ChatPage):
+    // The bottom divider belongs to the shell that mounts the strip (ChatPaneChrome):
     // while the desktop sidebar is collapsed the shell insets the strip past
     // the stationary toggle, and a border on this root would stop short of
     // the gutter and leave a notch. Drawing it once, on the shell, keeps the

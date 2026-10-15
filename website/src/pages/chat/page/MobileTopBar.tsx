@@ -95,7 +95,7 @@ export default function MobileTopBar({
         the menu chevron trails it, as on the approved mock — one control the
         eye reads as "the session, and its menu". Rendered whenever the slot
         exists, so the sessions toggle is in the bar even with no session open
-        (ChatPage's fixed corner button stands down); the title half needs a
+        (ChatPaneChrome's fixed corner button stands down); the title half needs a
         session and is not drawn in split view, whose grid names each pane. */}
     {topbarSlot && createPortal(
       <>

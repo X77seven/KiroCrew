@@ -22,8 +22,8 @@ export function useBulkModelSwitch({ localSlots }: { localSlots: Slot[] }) {
   const [bulkModel, setBulkModel] = useState('')        // pending pick ('auto' = provider default)
   const [bulkSkipRunning, setBulkSkipRunning] = useState(true)
   const [bulkModelError, setBulkModelError] = useState('')
-  // Per-instance id: ChatPage mounts a mobile-drawer sidebar and a desktop one, so a
-  // literal id would collide and point one panel's checkbox at the other's label.
+  // Per-instance id: SessionsSidebarChrome mounts a mobile-drawer sidebar and a desktop one, so
+  // a literal id would collide and point one panel's checkbox at the other's label.
   const bulkSkipRunningLabelId = useId()
   const bulkModelsQuery = useAvailableModelsQuery({ enabled: bulkModelOpen })
   const bulkModelOptions = bulkModelsQuery.data

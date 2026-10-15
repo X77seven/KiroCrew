@@ -69,7 +69,7 @@ describe('mobile sessions drawer overlay', () => {
   it('insets the panel with visual-viewport margins, keeping its safe-area edges', async () => {
     const s = await src('pages/ChatPage.tsx')
     // Scoped to the sessions drawer's OverlayDrawer element, not the whole file:
-    // OTHER mobile surfaces in ChatPage (the floating open-sessions button, the
+    // OTHER mobile surfaces in pages/chat/page/ (the floating open-sessions button, the
     // right-side inline overlay) also carry `top-safe-offset-[42px]`, so a
     // file-wide match would not tell this panel apart from them.
     const start = s.indexOf('<OverlayDrawer open=')

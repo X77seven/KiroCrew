@@ -267,7 +267,8 @@ describe('scroll shell: extraction wiring (the seams the split created)', () => 
   it('page threads the controller wiring onto the shell call', () => {
     // The import IS the extraction: its deletion is the "silently undone"
     // mutation, and a collection failure alone names no pin.
-    expect(SRC).toContain("import TranscriptScrollShell, { useTranscriptWidth } from './chat/TranscriptScrollShell'")
+    expect(SRC).toContain("import TranscriptScrollShell from '../TranscriptScrollShell'")
+    expect(SRC).toContain("import { useTranscriptWidth } from './chat/TranscriptScrollShell'")
     expect(SRC).toContain('scrollerRef={scrollerRef}')
     expect(SRC).toContain('virt={virt}')
     // Two consumers thread loadingOlder (the pinned-banner row props and the

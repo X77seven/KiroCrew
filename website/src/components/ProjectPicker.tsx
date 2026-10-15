@@ -171,7 +171,7 @@ interface Props {
   /**
    * Turn on the agent hand-off in the listing-failure notice. The hand-off
    * navigates to the chat and unmounts whatever this popover floats over, so
-   * only a mount with nothing unsaved beneath it may set this: ChatPage's
+   * only a mount with nothing unsaved beneath it may set this: ComposerDockView's
    * project chooser does (its composer draft is persisted per slot by
    * `chatDrafts`). Off by default — the safe direction — for FolderConfigModal
    * (folder form), RepoSettings (repo form) and ProjectScaffolderPage (wizard).
@@ -185,7 +185,7 @@ interface Props {
    */
   startPath?: string
   /** Rendered below the listing, inside the popover (so a click there does not dismiss it):
-   *  ChatPage's AWS profile row for the chat's current project. */
+   *  ComposerDockView's AWS profile row for the chat's current project. */
   footer?: ReactNode
 }
 

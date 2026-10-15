@@ -1,4 +1,4 @@
-// The picker's caller footer (ChatPage's AWS profile row): keys typed in it belong to it.
+// The picker's caller footer (ComposerDockView's AWS profile row): keys typed in it belong to it.
 import { screen, fireEvent } from '@testing-library/react'
 import { renderWithProviders } from './helpers'
 import ProjectPicker from '../components/ProjectPicker'

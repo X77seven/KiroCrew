@@ -349,7 +349,7 @@ export function useSessionsDrawer({
   // phone top-bar slots (pageEnvironment.ts) resolve through the same hook.
   const activitySlot = useShellSlot('activity-bar-slot', !isMobile && !embedMode)
   /** The inline panel's mount predicate, shared by the overlay phase effect
-   *  and ChatPage's render so the two cannot disagree. */
+   *  and ChatTitleOverlay's render so the two cannot disagree. */
   const hasTaskDashboard = tabsCtl.tabs.some(tab => tab.kind === 'command-center')
   const sidePanelWantsMount = shouldMountSidePanel({ activityOpen, hasLiveAppTab, hasBrowserTab, hasTaskDashboard, searchOpen: search.isOpen })
     && !isSidePanelHidden({ activityOpen, hasLiveAppTab, hasBrowserTab, hasTaskDashboard, searchOpen: search.isOpen })
@@ -401,7 +401,7 @@ export function useSessionsDrawer({
    *
    *  Mobile has no actbar grid column, so the panel renders as a flex sibling of
    *  the chat pane at the full window width — it covers the content area
-   *  outright. Anything the chat pane floats over that area (ChatPage's sessions
+   *  outright. Anything the chat pane floats over that area (ChatPaneChrome's sessions
    *  FAB) would land on top of the panel's own controls, so it is gated on
    *  this. Reuses the panel's own mount/visibility predicates rather than
    *  re-deriving them from `activityOpen`, which is only one of their inputs (a
@@ -603,8 +603,8 @@ export function useSessionsDrawer({
     : (sidebarPinned || (filteredSlots.length === 0 && !previewExpanded))
   // Whether the sidebar -- and with it the banner that says a failed
   // folder-order read -- is on this screen right now. The same facts that mount
-  // it in ChatPage's render: embed-chat never mounts one, embed-sessions always does, and the
-  // dashboard mounts it in the drawer while the drawer is (mobile) or the panel
+  // it in SessionsSidebarChrome's render: embed-chat never mounts one, embed-sessions always does, and
+  // the dashboard mounts it in the drawer while the drawer is (mobile) or the panel
   // is open (desktop). The header menu and the folder-suggestion card say the
   // failure themselves only when this is false: one screen, one notice.
   const sidebarOnScreen = embedMode === 'chat'

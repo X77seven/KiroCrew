@@ -201,7 +201,7 @@ Either one releases the microphone and ends the start.
 | Worklet | `website/public/pcm-worklet.js` | Float32-to-16 kHz mono Int16 PCM downsampler |
 | Streaming hook | `website/src/hooks/useStreamingStt.ts` | Opens the WS, wires the worklet, emits partial and final |
 | Voice hook | `website/src/hooks/useVoiceInput.ts` | Owns mic and device selection, and picks streaming or batch for the NEXT utterance. `stop`, `cancel` and `recording` route on the transport of the utterance in flight (`ownTransportRef ?? startupTransport`), never on the preference, so flipping the mode mid-utterance cannot send a commit or discard down the other transport. While a streaming session drains after the mode was switched off, `drainCancellable` exposes the "Discard dictation" control, which cancels the session and rolls the dictated region out of the composer (`cancelVoiceRollback.test.tsx`) |
-| Composer wiring | `website/src/chat-core/composer/useComposerVoice.ts` | The `Composer` root's Voice atom: splices the live region into the input box, owns the one-mic mutex and the frozen-prefix snapshot; `ChatPage.tsx` and `ChatPane.tsx` mount the root and supply only host options |
+| Composer wiring | `website/src/chat-core/composer/useComposerVoice.ts` | The `Composer` root's Voice atom: splices the live region into the input box, owns the one-mic mutex and the frozen-prefix snapshot; `ComposerDockView.tsx` and `ChatPane.tsx` mount the root and supply only host options |
 | Recording UI | `website/src/components/VoiceDictationPanel.tsx`, `VoiceStatusBar.tsx` | The animated panel, and the thin bar it falls back to |
 | Composer dictation | `website/src/components/chat-input/voice.ts` | The composer's side of the Voice atom: the caret a transcript splices in at, the dictation-panel gate, Escape to discard, and on touch the hold-to-talk mode and the labels its controls carry |
 | Composer voice controls | `website/src/components/chat-input/VoiceControls.tsx` | Renders that state: the hold gesture's cancel cue, the dictation panel or status bar, the hold target, and the mic |
@@ -1340,7 +1340,7 @@ either one is a race.
 
 ## Frozen-prefix behaviour
 
-`useComposerVoice.ts` (the `Composer` root's Voice atom, mounted by `ChatPage.tsx`
+`useComposerVoice.ts` (the `Composer` root's Voice atom, mounted by `ComposerDockView.tsx`
 and `ChatPane.tsx`) snapshots the composer's contents and the caret on the first
 `partial` of an utterance. Later partials replace only the live region after that
 snapshot, so anything the user typed before speaking survives, and the caret does

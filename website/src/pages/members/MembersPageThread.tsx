@@ -731,7 +731,7 @@ export function MembersPageThreadColumn({
             {active && (
               <>
                 {/* The header floats over the thread's top edge (#18325), the way
-                    ChatPage's title row overlays its transcript: absolute, no
+                    ChatTitleOverlay's title row overlays its transcript: absolute, no
                     background of its own, so the conversation scrolls under the
                     Glass identity pill and the pill reads as a chip on the
                     conversation rather than a bar above it. The pane under it pays

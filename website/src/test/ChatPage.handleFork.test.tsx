@@ -1,9 +1,9 @@
 /**
- * Tests for the tail-fork direction-resolution logic used by ChatPage's
+ * Tests for the tail-fork direction-resolution logic used by useForkSession's
  * `handleFork`.
  *
  * IMPORTANT SCOPE NOTE: `handleFork` is a `useCallback` defined inline inside
- * the (very large) `ChatPage` component and is not exported standalone. A full
+ * the `useForkSession` hook (pages/useChatPageSlotSwitches.ts) and is not exported standalone. A full
  * `render(<ChatPage />)` harness was attempted first (real AssistantMessage,
  * real Redux store, mocked api/dashboardConfig) but ChatPage's message list
  * goes through an additional turn-grouping/virtualization layer upstream of
@@ -16,16 +16,16 @@
  *
  * Per the task's explicit fallback, this file instead tests the resolution
  * logic at the smallest feasible unit: a tiny hook that mounts the EXACT same
- * two lines as ChatPage.tsx's handleFork (same useQuery key/queryFn, same
+ * two lines as useForkSession's handleFork (same useQuery key/queryFn, same
  * `resolvedCfg` / `direction` expressions, same dispatch(forkSlot(...))),
  * driven through the real Redux `forkSlot` thunk and the real `api` module
  * (mocked at the network boundary), inside a real QueryClientProvider. This
  * exercises the real `forkSlot` thunk + real api.forkChatSlot signature (so a
  * signature drift would fail these tests) while being explicit that the
- * direction-selection EXPRESSION is duplicated from ChatPage.tsx rather than
- * imported. If ChatPage.tsx's handleFork expression changes, this file must
+ * direction-selection EXPRESSION is duplicated from useForkSession rather than
+ * imported. If useForkSession's handleFork expression changes, this file must
  * be updated to match -- there is no single source of truth to import from
- * without exporting handleFork from ChatPage (out of scope: "do not touch
+ * without exporting handleFork from useForkSession (out of scope: "do not touch
  * non-test source files").
  *
  * The `resolvedCfg` expression is `forkCfg ?? await api.dashboardConfig()`:
@@ -39,7 +39,7 @@
  * not destructure `isLoading` either.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { useQuery, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
@@ -74,7 +74,7 @@ function makeWrapper(store: ReturnType<typeof makeStore>) {
 }
 
 /**
- * Verbatim reproduction of ChatPage.tsx's handleFork direction-resolution
+ * Verbatim reproduction of useForkSession's handleFork direction-resolution
  * (the useQuery call and the two `resolvedCfg` / `direction` lines), wired to
  * the real forkSlot thunk. See file header for why this is duplicated rather
  * than imported.
@@ -278,11 +278,18 @@ describe('handleFork over-capacity refusal reaches the user as human copy', () =
 })
 
 describe('handleFork surfaces its failure on the shared action-error notice', () => {
-  // ChatPage was split into owner modules: the handler stays in ChatPage.tsx, the
+  // ChatPage was split into owner modules: the handler is in useChatPageSlotSwitches.ts, the
   // shared notice state in turnActions.ts, its render in ChatPaneNotices.tsx, the
   // slot-switch clear in composerDrafts.ts, and the copy helper in utils/forkFailure.
   const read = (p: string) => readFileSync(resolve(__dirname, p), 'utf8')
-  const src = read('../pages/ChatPage.tsx')
+  // The page and every owner it composes (pages/chat/page/*, pages/useChatPage*), so the handler is found
+  // in its home and the "no second surface" halves see every view.
+  const isSource = (f: string) => /\.tsx?$/.test(f) && !/\.test\./.test(f)
+  const src = [
+    read('../pages/ChatPage.tsx'),
+    ...readdirSync(resolve(__dirname, '../pages/chat/page')).filter(isSource).sort().map(f => read(`../pages/chat/page/${f}`)),
+    ...readdirSync(resolve(__dirname, '../pages')).filter(f => /^useChatPage/.test(f) && isSource(f)).sort().map(f => read(`../pages/${f}`)),
+  ].join('\n')
   const turnActions = read('../pages/chat/page/turnActions.ts')
   const notices = read('../pages/chat/page/ChatPaneNotices.tsx')
   const drafts = read('../pages/chat/page/composerDrafts.ts')

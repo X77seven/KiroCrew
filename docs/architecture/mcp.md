@@ -2877,7 +2877,7 @@ primitive in `components/ui`, so a disclosure's owner is the shared
 `open:<id>` scope the generator compiles for every registered `kind:
 disclosure` (Older Sessions in `ChatSidebar`). A container that IS its own owner
 reports through `useGuideRevealScope(id, open)`.
-Wired today: the sessions sidebar and drawer (`ChatPage`), the chat side panel
+Wired today: the sessions sidebar and drawer (`SessionsSidebarChrome`), the chat side panel
 (`ChatPage`), the message box (`composer.box`, `ChatInput`), the navigation
 rail (`shell.nav-rail`, `RailBrandToggle`), the docked terminal panel
 (`shell.terminal-panel`, `BottomTerminalPanel`), the phone menu

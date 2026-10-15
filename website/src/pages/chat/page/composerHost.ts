@@ -234,7 +234,7 @@ export function useComposerVoiceHost({
   const isMac = useAppSelector(s => s.dashboard.status?.platform) === 'darwin'
   // Voice dictation is the Composer's Voice atom (chat-core P3-b): ChatPage no
   // longer runs the hook or wires 23 props. It supplies, through the `Composer`
-  // root ChatPage renders, only what the atom cannot know on its own: which slot the
+  // root ComposerDockView renders, only what the atom cannot know on its own: which slot the
   // composer currently shows (the draft-settlement predicate), where an
   // off-screen batch transcript goes (that slot's persisted draft), the
   // endpointer's auto-submit, and that this is the surface owning the

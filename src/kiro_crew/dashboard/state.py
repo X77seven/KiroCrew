@@ -1381,7 +1381,7 @@ def is_turn_interrupted(messages: list[dict]) -> bool:
     Selects the wording injected for the model (``_MANUAL_RESUME_MSG`` vs
     ``_MANUAL_CONTINUE_MSG``), gates whether the composer offers the Resume
     control (the ``continuable && interrupted`` composition in
-    ``website/src/pages/ChatPage.tsx``), and feeds the ``interrupted`` field of
+    ``website/src/pages/chat/page/ComposerDockView.tsx``), and feeds the ``interrupted`` field of
     the slot summary so the sidebar can stop rendering a goal loop as actively
     working while its session sits behind a Resume button. A False result means
     "as far as the transcript shows, the last turn finished or was ended on

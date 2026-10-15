@@ -310,7 +310,7 @@ export default function AgentDropdownList({ agents, activeAgent, activeKind, def
 
   return (
     // Plain flex column: scrolling is owned by the host's listbox wrapper
-    // (ChatPage / ChatPane render this inside `overflow-y-auto max-h-[280px]`).
+    // (ComposerDockView / ChatPane render this inside `overflow-y-auto max-h-[280px]`).
     // A second overflow container here nests two scrollbars (#6375), and
     // `scrollIntoView` on the active row scrolls the nearest scrollable
     // ancestor, so the host-owned scroller keeps that behavior intact.

@@ -118,7 +118,7 @@ export function useCrewWindowAgentMode({ instanceId, slotKey, slotPath, name, sl
     } satisfies ApprovalModeRemote,
   }
   const portal = dd.open && rect ? createPortal(
-    // Same box as the local chat's agent picker (ChatPage).
+    // Same box as the local chat's agent picker (ComposerDockView).
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div ref={dd.dropdownRef} role="dialog" aria-label={i18nT('pages.chatPage.agent_selector')} tabIndex={-1} onKeyDown={onListKeyDown} className="fixed z-[9999] bg-bg-elevated border border-border rounded-xl shadow-xl min-w-[260px] max-w-[340px] flex flex-col p-1 gap-0.5 animate-slide-up" style={{ bottom: window.innerHeight - rect.top + 4, left: Math.max(8, Math.min(rect.left, window.innerWidth - 348)) }}>
       <div className="px-1.5 pt-1.5 pb-1">

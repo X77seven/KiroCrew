@@ -605,8 +605,8 @@ _UNOWED_WINDOW_ROLES = _TRANSIENT_ROLES - {"permission", "chunk", "streaming"}
 # (chat_fork): "design-critique" is an app-worker mode assigned at birth by the
 # Design Critique app's openSlot() — the custom mode keeps its throwaway dc-*
 # slots off the chat sidebar, which renders only plain "" slots
-# (ChatPage.tsx filteredSlots). Switching an existing session INTO an app-worker
-# mode, or forking one with it as an override, is not a real flow, so those two
+# (chat/page/pageEnvironment.ts filteredSlots). Switching an existing session INTO an
+# app-worker mode, or forking one with it as an override, is not a real flow, so those two
 # allowlists deliberately stay narrower — do not "sync" them to this one.
 _CREATABLE_MODES = ("", "design-critique")
 

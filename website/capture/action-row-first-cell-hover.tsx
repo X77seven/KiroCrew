@@ -7,7 +7,7 @@
  * real layout plus a real pointer hover; happy-dom computes neither, and the
  * whole chat page would need a gateway and an open slot that are no part of
  * it. What IS part of it is the box chain between the content column and the
- * row -- the per-row wrapper pair both hosts render (`ChatPage.tsx`,
+ * row -- the per-row wrapper pair both hosts render (`transcriptRendering.tsx`,
  * `app-sdk/ChatMessageList.tsx`), with the clipping `.chat-message-body` -- so
  * this rebuilds that chain with the literal host classes and mounts the REAL
  * `UserMessage` and `AssistantMessage` inside it.

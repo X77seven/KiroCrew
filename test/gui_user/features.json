@@ -468,7 +468,7 @@
         "seed": "memory-populated",
         "members": [],
         "feature_flags": [],
-        "notes": "There is no picker button: KnowledgePicker.tsx mounts in ChatPage.tsx only after a prefix search (useKnowledgeFetch.ts). Needs indexed knowledge items. memory-populated seeds memory files only, no knowledge source, so the lane must add a source before a search can return results."
+        "notes": "There is no picker button: KnowledgePicker.tsx mounts in ComposerDockView.tsx only after a prefix search (useKnowledgeFetch.ts). Needs indexed knowledge items. memory-populated seeds memory files only, no knowledge source, so the lane must add a source before a search can return results."
       },
       "runnable": "nightly",
       "estimated_steps": 4,
@@ -476,7 +476,8 @@
       "source": [
         "website/src/pages/chat/KnowledgePicker.tsx",
         "website/src/pages/chat/useKnowledgeFetch.ts",
-        "website/src/pages/ChatPage.tsx"
+        "website/src/pages/ChatPage.tsx",
+        "website/src/pages/chat/page/ComposerDockView.tsx"
       ],
       "priority": "P2",
       "merged_from": [
@@ -504,6 +505,7 @@
         "website/src/pages/chat/pagination.ts",
         "website/src/pages/chat/EarlierMessagesBar.tsx",
         "website/src/pages/ChatPage.tsx",
+        "website/src/pages/chat/page/ChatTranscriptView.tsx",
         "src/kiro_crew/tests_fixtures/sessions-long-history/fixture.yaml",
         "docs/system-specs/modules/history.md"
       ],
@@ -656,7 +658,7 @@
         "seed": "sessions-a-few",
         "members": [],
         "feature_flags": [],
-        "notes": "Session with ≥3 turns. Only a user message offers it, an assistant reply has no Rewind action. The action row shows on hover, so hover before clicking. Send calls POST /api/chat/slots/{slot}/rewind (ChatPage.handleEditResend)."
+        "notes": "Session with ≥3 turns. Only a user message offers it, an assistant reply has no Rewind action. The action row shows on hover, so hover before clicking. Send calls POST /api/chat/slots/{slot}/rewind (useMessageActions.handleEditResend)."
       },
       "runnable": "nightly",
       "estimated_steps": 3,

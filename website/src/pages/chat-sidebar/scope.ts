@@ -101,8 +101,8 @@ export interface ChatSidebarProps {
    *  navigation, which is the correct behaviour both on a surface with no side
    *  panel (the `/embed/sessions` list) and for a url the panel cannot resolve. */
   onOpenSource?: (slotKey: string, link: { url: string; kind: 'change' | 'issue' }) => boolean
-  /** When true, ChatPage floats a hide-sidebar button over this header's
-   *  top-left (open state), so the header reserves left space for it.
+  /** When true, SessionsSidebarChrome floats a hide-sidebar button over this
+   *  header's top-left (open state), so the header reserves left space for it.
    *  Omitted in embed/sessions mode where the sidebar is the whole view. */
   collapsible?: boolean
   /** Element to portal the "drag a session into the chat" drop zone into —

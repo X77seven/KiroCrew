@@ -134,4 +134,4 @@ Both endpoints emit SEL audit records.
 | Worktree endpoint | `src/kiro_crew/dashboard/handlers/worktree.py` |
 | WS event → state | `website/src/hooks/useWebSocket.ts` (routes the frame), `website/src/hooks/websocket/composerCards.ts` (validates it), `website/src/store/chat/composerCards.ts` (the reducer) |
 | Card UI | `website/src/components/FollowUpCard.tsx` |
-| Render site | `website/src/pages/ChatPage.tsx` |
+| Render site | `website/src/pages/chat/page/ComposerDockView.tsx` |

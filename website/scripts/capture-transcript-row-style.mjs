@@ -35,7 +35,7 @@
  *
  * HISTORY / WHY THE SELECTOR IS ASSERTED. This runner previously filtered host
  * row wrappers with `el.className.includes('px-5')`. The row gutter was unified
- * to `px-4` (ChatMessageList.tsx, ChatPage.tsx), so that filter matched nothing:
+ * to `px-4` (ChatMessageList.tsx, ChatTranscriptView.tsx), so that filter matched nothing:
  * the probe measured ZERO rows and every assertion in it passed vacuously. The
  * gutter class is now read from the DOM instead of hardcoded, and a zero-row
  * frame is a hard FAIL.

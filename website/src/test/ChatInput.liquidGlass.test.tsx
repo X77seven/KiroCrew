@@ -122,7 +122,7 @@ describe('composer liquid glass', () => {
     // second line under the pane.
     // Neither the shelf nor the fade is its own stacking context: the
     // `z-index: -1` layer resolves against the dock's input-area wrapper
-    // (ChatPage's `relative z-10 dock-inert`), so it sits BEHIND the pane's
+    // (ComposerDockView's `relative z-10 dock-inert`), so it sits BEHIND the pane's
     // shadow (a fade painted over the shadow whitened it out part-way and left
     // a bright band under the pane), above the transcript and below the chips;
     // that wrapper is also its containing block, so it spans the dock root --

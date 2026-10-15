@@ -126,7 +126,7 @@ export default function SessionPulseSurveyCard({
   const { t } = useTranslation()
   // Per-instance ids for the two labelled fields. A literal id would be unique
   // only for as long as at most one card is mounted, which today holds because
-  // ChatPage gates the card on `!embedded && !popout`; the moment a second
+  // ChatTranscriptView gates the card on `!embedded && !popout`; the moment a second
   // surface may render one, duplicate ids would make each `htmlFor` /
   // `aria-labelledby` point at whichever copy mounted first. useId makes that
   // uniqueness structural instead of a property of the gate.

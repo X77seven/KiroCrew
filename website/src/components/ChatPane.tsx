@@ -778,7 +778,7 @@ export default function ChatPane({
             box by `dockRef`. No opaque bottom fade any more: the material's
             blur and tint keep the dock legible. The root is plain
             `pointer-events-none`; `dock-inert` (index.css) goes on the TWO
-            inner wrapper boxes below, as on ChatPage, so every bar, card and
+            inner wrapper boxes below, as on ComposerDockView, so every bar, card and
             the composer still catches input while the empty width beside them
             lets wheel and touch reach the transcript. NOT on the root: the
             jump pill is a direct child of the root, and its wrapper is a
@@ -978,7 +978,7 @@ export default function ChatPane({
           hasEffort={effortSupported}
           modelIsInheritedDefault={modelMarker === 'default'}
           modelIsAutoChosen={modelMarker === 'auto'}
-          // See ChatPage: the slot's RAW model, because `shownModel` substitutes
+          // See ComposerDockView: the slot's RAW model, because `shownModel` substitutes
           // the served id and would hide every routed turn.
           modelIsJevRouted={jevRouteOn && isUnpinnedModel(paneSlot?.model)}
           contextPct={contextPct}

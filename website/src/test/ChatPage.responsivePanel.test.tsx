@@ -322,7 +322,7 @@ describe('ChatPage — session-header activity toggle (relocated from the top ba
 /**
  * Mobile: the toggle must NOT be gated on `!isMobile` — a phone still needs a
  * way to open the activity panel, since SidePanel renders full-width there and
- * ChatPage keeps an inline (non-portal) render path specifically for mobile.
+ * ChatSidePanels keeps an inline (non-portal) render path specifically for mobile.
  */
 describe('ChatPage — activity toggle on mobile', () => {
   beforeEach(() => { mockIsMobile = true; setWindowWidth(390); localStorage.clear() })

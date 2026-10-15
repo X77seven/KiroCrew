@@ -177,7 +177,7 @@ export default function WelcomeView({ setInput }: WelcomeViewProps) {
     ? <img src={brandLogo} alt="" aria-hidden="true" className="w-12 h-12 drop-shadow-lg shrink-0 animate-float rounded-md object-contain" />
     : <KiroGhost size={48} className="drop-shadow-lg shrink-0 animate-float" />
 
-  // The memory chip sits above the composer (ChatPage renders it).
+  // The memory chip sits above the composer (ComposerDockView renders it).
   return (
     // Unprefixed = phones: a safe-centred column (falls back to top-aligned when it
     // overflows, so nothing clips). Short wide windows stack from the top. Wide and tall

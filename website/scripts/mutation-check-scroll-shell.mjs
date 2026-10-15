@@ -38,7 +38,7 @@ const parses = (src) => {
 
 // The shell region may live in ChatPage or, post-extraction, in the shell
 // component; mutate whichever file currently holds each region's anchors.
-const FILES = ['src/pages/ChatPage.tsx', 'src/pages/chat/TranscriptScrollShell.tsx'].map(f => resolve(f))
+const FILES = ['src/pages/ChatPage.tsx', 'src/pages/chat/page/ChatTranscriptView.tsx', 'src/pages/chat/page/ChatTitleOverlay.tsx', 'src/pages/chat/page/ComposerDockView.tsx', 'src/pages/chat/TranscriptScrollShell.tsx'].map(f => resolve(f))
 const SUITES = [
   'src/test/ChatPage.scrollShell.recipe.test.tsx',
   'src/test/ChatPage.scrollShell.render.test.tsx',

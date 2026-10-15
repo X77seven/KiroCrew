@@ -1867,7 +1867,7 @@ export default function App() {
         style={{ zIndex: OVERLAY_Z_MAX }}
       />
 
-      {/* Full-height activity bar slot: ChatPage portals its
+      {/* Full-height activity bar slot: ChatSidePanels portals its
           Activity panel here on desktop so it spans the window top-to-bottom
           instead of sitting below the header row. Empty (0 width) when the
           panel is closed or on non-chat routes. */}

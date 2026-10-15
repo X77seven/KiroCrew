@@ -20,8 +20,8 @@ export const FLYOUT_MAX_ROWS = 8
  * One definition because three animations must agree on it: the drawer's
  * collapse clip, the drawer's expand clip, and this flyout's open clip. When it
  * was inline at each call site, "the same button" was three literals that could
- * drift. Keep it in sync with the button's own Tailwind classes in ChatPage
- * (`top-[9px] left-2 w-7 h-7`).
+ * drift. Keep it in sync with the button's own Tailwind classes in
+ * SessionsSidebarChrome (`top-[9px] left-2 w-7 h-7`).
  */
 export const TOGGLE_RECT = { x: 8, y: 9, size: 28 } as const
 

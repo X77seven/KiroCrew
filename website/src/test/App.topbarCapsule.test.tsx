@@ -4,7 +4,7 @@
  * - macOS fullscreen: 'mac-fullscreen' class driven by the electron
  *   fullscreen-changed bridge (drops the 84px traffic-light inset via CSS)
  *
- * (The activity-panel open toggle lives in the ChatPage session header, not
+ * (The activity-panel open toggle lives in the ChatTitleOverlay session header, not
  * the top bar — see ChatPage.responsivePanel.test.tsx for its coverage.)
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'

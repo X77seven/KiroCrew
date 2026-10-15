@@ -62,7 +62,7 @@ vi.mock('../hooks/useVoiceInput', () => ({ useVoiceInput: () => ({ recording: fa
 vi.mock('../hooks/useBranding', () => ({ useBranding: () => ({ botName: 'Test', avatar: '' }) }))
 vi.mock('../hooks/useAgents', () => ({ useAgents: () => ({ agents: [{ name: 'kirocrew' }, { name: 'researcher' }], defaultAgent: 'kirocrew' }) }))
 // One app-contributed session control, so the composer renders its chip and
-// ChatPage mounts SessionControlHost against it. The control's bundle does not
+// ComposerDockView mounts SessionControlHost against it. The control's bundle does not
 // exist in this harness; the host's own load-failure notice renders inside the
 // positioned dialog, which is all these tests measure.
 vi.mock('../hooks/useSessionControls', async (importOriginal) => {

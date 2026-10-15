@@ -1592,7 +1592,7 @@ function ChatInput({
       {/* Context shelf — plain full-width row below input, standing on the
           `glass-shelf` fade (index.css): the dock floats over the transcript,
           so without it the agent / project / model chips read against whatever
-          scrolls under them. The fade is positioned against ChatPage's
+          scrolls under them. The fade is positioned against ComposerDockView's
           `relative z-10 dock-inert` wrapper (the shelf is deliberately not
           positioned), so it spans the dock root — which stops short of the
           scrollbar gutter — and sits behind the pane's shadow;

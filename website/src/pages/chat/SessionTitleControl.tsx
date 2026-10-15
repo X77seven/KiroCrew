@@ -20,7 +20,7 @@ import { uiLocation } from '../../uiLocations/uiLocation'
  * reveals on `group/header` hover, and the Sparkles button that asks the LLM
  * for a new title (spinner while it runs).
  *
- * Shared by the single-session header (ChatPage) and every split-view pane
+ * Shared by the single-session header (ChatTitleOverlay) and every split-view pane
  * header (ChatPane) so the two cannot drift again — the pane header used to
  * render a bare title span with neither affordance (#9727). The HOST supplies
  * the `group/header` hover target; this control only renders the row.

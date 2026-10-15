@@ -758,7 +758,7 @@ describe('usePinnedPrompt caps the card at the transcript floor', () => {
     const h = renderPin()
     const g = mountGeometry(5)
     mountTallFold(g)
-    // ChatPage writes `paddingBottom: dockH + DOCK_CLEARANCE_PX` on the scroller;
+    // ChatTranscriptView writes `paddingBottom: dockH + DOCK_CLEARANCE_PX` on the scroller;
     // here a 120px dock plus 16px clearance.
     g.scroller.style.paddingBottom = '136px'
     wire(h, g)
