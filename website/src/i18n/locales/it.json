@@ -9399,6 +9399,7 @@
       "root_unreadable": "Nessuna autorizzazione per leggere la cartella dell’area di lavoro",
       "root_hidden_only": "Questa area di lavoro contiene solo elementi nascosti (cartelle di strumenti e di cache escluse, voci protette)",
       "root_truncated": "Area di lavoro troppo grande da elencare: limite di 10.000 elementi raggiunto",
+      "root_truncated_search_hint": "Scrivi il nome di un file nella casella qui sopra per trovarlo.",
       "unreadable_folders": "Cartelle non leggibili: {{paths}}",
       "dismiss_unreadable": "Ignora: nascondi questo avviso finché le cartelle non leggibili non cambiano",
       "unreadable_dismissed_many": "Avviso nascosto — {{count}} cartelle ancora non leggibili (riappare quando cambiano)",

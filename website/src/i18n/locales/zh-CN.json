@@ -9125,6 +9125,7 @@
       "root_unreadable": "没有读取工作区文件夹的权限",
       "root_hidden_only": "此工作区仅包含隐藏项（跳过的工具和缓存文件夹、受保护的条目）",
       "root_truncated": "工作区过大，无法列出：已达到 10,000 个项目的数量上限",
+      "root_truncated_search_hint": "在上方的输入框中输入文件名即可找到它。",
       "unreadable_folders": "无法读取的文件夹：{{paths}}",
       "dismiss_unreadable": "忽略：在不可读的文件夹发生变化之前隐藏此通知",
       "unreadable_dismissed_other": "通知已隐藏 — 仍有 {{count}} 个文件夹无法读取（发生变化时再次显示）",

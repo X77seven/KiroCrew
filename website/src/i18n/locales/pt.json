@@ -9399,6 +9399,7 @@
       "root_unreadable": "Sem permissão para ler a pasta do espaço de trabalho",
       "root_hidden_only": "Este espaço de trabalho contém apenas itens ocultos (pastas de ferramentas e de cache ignoradas, entradas protegidas)",
       "root_truncated": "Espaço de trabalho grande demais para listar: limite de 10.000 itens atingido",
+      "root_truncated_search_hint": "Digite o nome de um arquivo na caixa acima para encontrá-lo.",
       "unreadable_folders": "Pastas não legíveis: {{paths}}",
       "dismiss_unreadable": "Dispensar: ocultar este aviso até que as pastas não legíveis mudem",
       "unreadable_dismissed_many": "Aviso oculto — {{count}} pastas ainda não legíveis (reaparece quando elas mudarem)",

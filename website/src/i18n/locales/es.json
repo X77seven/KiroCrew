@@ -9399,6 +9399,7 @@
       "root_unreadable": "Sin permiso para leer la carpeta del espacio de trabajo",
       "root_hidden_only": "Este espacio de trabajo solo contiene elementos ocultos (carpetas de herramientas y de caché omitidas, entradas protegidas)",
       "root_truncated": "El espacio de trabajo es demasiado grande para listarlo: límite de 10.000 elementos alcanzado",
+      "root_truncated_search_hint": "Escribe el nombre de un archivo en el cuadro de arriba para encontrarlo.",
       "unreadable_folders": "Carpetas no legibles: {{paths}}",
       "dismiss_unreadable": "Descartar: ocultar este aviso hasta que cambien las carpetas no legibles",
       "unreadable_dismissed_many": "Aviso oculto — {{count}} carpetas siguen sin poder leerse (se mostrará de nuevo cuando cambien)",

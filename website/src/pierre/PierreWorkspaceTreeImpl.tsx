@@ -1550,6 +1550,14 @@ export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext
         {folderNotice}
         <Icon size={20} className="opacity-50" />
         <span className="text-[12.5px]">{message}</span>
+        {/* The next step. Both hosts (FolderPanel, FileBrowserRail) put a box
+            above this tree whose name query goes past the cap, so the line is
+            true on each; a new host without one must not mount this state. */}
+        {mode !== 'changed' && rootTruncated && (
+          <span className="text-[12px] text-balance" data-testid="workspace-tree-root-truncated-hint">
+            {i18nT('components.workspaceTree.root_truncated_search_hint')}
+          </span>
+        )}
       </div>
     )
   }

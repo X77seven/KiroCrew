@@ -287,6 +287,20 @@ describe('PierreWorkspaceTreeImpl — data loading', () => {
     expect(screen.queryByText('No files in this workspace yet')).not.toBeInTheDocument()
   })
 
+  it("points the empty capped tree at the search box above it", async () => {
+    vi.mocked(api.projectTree).mockResolvedValue(mkTree({
+      paths: [],
+      directories: [],
+      repo: false,
+      truncated: true,
+      truncatedDirectories: [''],
+    }))
+    renderTree()
+    await screen.findByTestId('workspace-tree-root-truncated')
+    expect(screen.getByTestId('workspace-tree-root-truncated-hint'))
+      .toHaveTextContent('Type a file name in the box above to find it.')
+  })
+
   it('keeps explicit directory rows and marks directories whose files were sampled', async () => {
     vi.mocked(api.projectTree).mockResolvedValue(mkTree({
       paths: ['alpha/a.ts'],
