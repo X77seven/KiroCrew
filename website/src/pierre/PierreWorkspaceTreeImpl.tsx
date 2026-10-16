@@ -42,7 +42,7 @@ import { isUntokenizableDirPath } from '../utils/dropClassify'
 import { errMessage } from '../utils/thunkError'
 import { PIERRE_TREE_STATE_ROW_CSS } from './config'
 import { recallExpandedPaths, rememberExpandedPaths } from './treeExpansionMemory'
-import { planTreeStateRows, stateRowsMatchingFilter, STATE_ROW_DECORATION, type TreeStateRowLabels } from './treeStateRows'
+import { planTreeStateRows, stateRowsMatchingFilter, STATE_ROW_ACTION_DECORATION, STATE_ROW_DECORATION, type TreeStateRowLabels } from './treeStateRows'
 import { recallDismissedUnreadable, rememberDismissedUnreadable } from './treeUnreadableDismissals'
 import { TreeSkeleton, type TreeReveal } from './tree'
 import { foldersOverRowBudget, mergeFolderListings, withFolder, type FolderListing } from './treeFolderListings'
@@ -423,7 +423,7 @@ function dedupeTreePaths(paths: string[]): string[] {
 /** Open loaded folders one whole-tree poll re-reads, at most. */
 const FOLDER_REREADS_PER_POLL = 3
 
-export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext, searchQuery, mode = 'all', selectedPath, persistExpansion = false, reveal, onRevealed }: {
+export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext, searchQuery, mode = 'all', selectedPath, persistExpansion = false, onOpenFolder, reveal, onRevealed }: {
   projectDir: string
   onFileOpen?: (absPath: string) => void
   /** Right-click "Add to context" on a row: hands the host the ABSOLUTE path
@@ -447,6 +447,9 @@ export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext
    *  hosts of this shared tree keep their collapsed-by-default behavior.
    *  Applies to `all` mode only: `changed` mode starts fully open by design. */
   persistExpansion?: boolean
+  /** Activating the "not shown: limit reached" row under a folder hands that
+   *  project-relative folder to the host, which opens it in a folder tab. */
+  onOpenFolder?: (folder: string) => void
   /** Load (if it is past the row cap) and expand one project-relative folder. */
   reveal?: TreeReveal | null
   /** Called once a reveal has been acted on, so the host can clear it: a
@@ -763,7 +766,7 @@ export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext
   const rowEmpty = i18nT('components.workspaceTree.row_empty')
   const rowHiddenOnly = i18nT('components.workspaceTree.row_hidden_only')
   const rowLinked = i18nT('components.workspaceTree.row_linked')
-  const rowTruncated = i18nT('components.workspaceTree.row_truncated')
+  const rowTruncated = i18nT(onOpenFolder ? 'components.workspaceTree.row_truncated_open' : 'components.workspaceTree.row_truncated')
   const stateRowLabels = useMemo<TreeStateRowLabels>(
     () => ({
       empty: rowEmpty,
@@ -778,6 +781,17 @@ export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext
   // all three read them from callbacks Pierre holds.
   const stateRowsRef = useRef<ReadonlySet<string>>(NO_STATE_ROWS)
   const stateRowFoldersRef = useRef<ReadonlySet<string>>(NO_STATE_ROWS)
+  // The folder a `truncated` state row's activation opens, or null for a row
+  // that is not that action: the planner names a childless folder truncated
+  // whenever the payload cuts it, and the row is an action only where the host
+  // can open a folder tab (`onOpenFolder`). Read from Pierre callbacks, so refs.
+  const onOpenFolderRef = useRef(onOpenFolder)
+  onOpenFolderRef.current = onOpenFolder
+  const actionableStateRow = (rowPath: string): string | null => {
+    if (!onOpenFolderRef.current) return null
+    const folder = rowPath.slice(0, Math.max(0, rowPath.lastIndexOf('/')))
+    return folder && truncatedDirectoriesRef.current.has(folder) ? folder : null
+  }
 
   // Rows can be dragged into the composer only where the host can take a
   // mention (it wires "Add to chat") and on a fine pointer: a touch long-press
@@ -815,7 +829,9 @@ export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext
       // (`./config`). Decided by the plan, the same Set the selection and
       // context-menu guards read -- never by the path's marker suffix, which a
       // real file can share: that file keeps its icon, its pointer and its open.
-      if (item.kind !== 'directory' && stateRowsRef.current.has(item.path)) return STATE_ROW_DECORATION
+      if (item.kind !== 'directory' && stateRowsRef.current.has(item.path)) {
+        return actionableStateRow(item.path) ? STATE_ROW_ACTION_DECORATION : STATE_ROW_DECORATION
+      }
       if (item.kind !== 'directory') return null
       const path = item.path.replace(/\/$/, '')
       // A folder the server could not read: the failure behind
@@ -852,7 +868,10 @@ export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext
       // The row speaks only for the chain's last folder, so the badge yields
       // only when that is the one truncated folder in the chain. Pierre
       // re-renders the row on every toggle, so this reads the live state.
-      if (truncated.length === 1 && truncated[0] === path && row.isExpanded && stateRowFoldersRef.current.has(path)) {
+      // Where the row is the open-in-folder-tab action instead, it says nothing about
+      // the cut, so the badge stays and keeps saying why the folder looks short.
+      if (truncated.length === 1 && truncated[0] === path && row.isExpanded && stateRowFoldersRef.current.has(path)
+        && !onOpenFolderRef.current) {
         return null
       }
       const label = i18nT('pages.chat.activityViewer.workspace_directory_truncated')
@@ -1148,7 +1167,11 @@ export function PierreWorkspaceTreeImpl({ projectDir, onFileOpen, onAddToContext
       // chosen. Deselecting notifies again; that turn finds no selection and
       // returns above.
       if (stateRowsRef.current.has(focused.getPath())) {
+        // The `truncated` row under a folder the cap still cuts is the one
+        // state row with a job: it hands that folder to the host to open.
+        const folder = actionableStateRow(focused.getPath())
         focused.deselect()
+        if (folder) onOpenFolderRef.current?.(folder)
         return
       }
       const abs = `${root}/${focused.getPath()}`

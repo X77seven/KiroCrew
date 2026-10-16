@@ -9116,6 +9116,7 @@
       "row_hidden_only": "숨김 항목만 포함되어 있음(건너뛴 도구·캐시 폴더, 보호된 항목)",
       "row_linked": "다른 폴더로의 링크: 내용은 목록에 표시되지 않음",
       "row_truncated": "일부 항목이 표시되지 않음: 항목 수 제한 10,000개에 도달했습니다",
+      "row_truncated_open": "폴더 탭에서 열기",
       "folder_listing_failed": "{{paths}}을(를) 불러오지 못했습니다.",
       "folder_listing_retry": "다시 시도",
       "folder_gone": "{{paths}}이(가) 더 이상 없습니다.",

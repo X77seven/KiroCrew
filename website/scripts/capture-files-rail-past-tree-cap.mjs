@@ -11,7 +11,7 @@
  *   02-folder-loaded     `packages` expanded: its own listing brings the folders the cap hid
  *   03-name-search       a name query on a cut tree goes to the filename search
  *   04-folder-revealed   a folder hit, clicked: the tree opens on it
- *   05-still-cut         a folder still cut on its own listing: its limit row
+ *   05-open-in-folder-tab  a folder still cut on its own listing: its limit row opens it in a folder tab
  *   06-folder-unavailable  a cut folder answers 404: the no-longer-exists notice, dismiss only, and the re-read tree without it
  *   06b-folder-refused   a cut folder answers 403: the link-or-protected notice, dismiss only
  *   07-folder-load-failed  a cut folder's own listing fails: the notice above, the folder still cut
@@ -65,7 +65,7 @@ for (const theme of ['light', 'dark']) {
 
   await row('huge-assets/').click()
   await under('huge-assets').waitFor({ timeout: 15000 })
-  await shot('05-still-cut')
+  await shot('05-open-in-folder-tab')
   await page.close()
 
   for (const [name, arm] of [['06-folder-unavailable', 'dir-gone'], ['06b-folder-refused', 'dir-refused'], ['07-folder-load-failed', 'dir-fail'], ['08-search-pending', 'search-pending'], ['09-search-failed', 'search-fail']]) {

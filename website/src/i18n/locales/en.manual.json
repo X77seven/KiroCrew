@@ -3801,6 +3801,7 @@
       "row_hidden_only": "Contains only hidden items (skipped tool and cache folders, protected entries)",
       "row_linked": "Link to another folder: contents not listed",
       "row_truncated": "Some items not shown: limit of 10,000 items reached",
+      "row_truncated_open": "Open in folder tab",
       "folder_listing_failed": "Couldn't load {{paths}}.",
       "folder_listing_retry": "Retry",
       "folder_gone": "{{paths}} no longer exists.",

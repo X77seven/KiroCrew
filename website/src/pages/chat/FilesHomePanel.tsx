@@ -32,7 +32,7 @@ function basename(p: string): string {
  * already `cd`'d into it" is offered here instead of requiring the user to know
  * that a side-panel tab kind spawns a shell in the right directory.
  */
-export default function FilesHomePanel({ projectDir, onFileOpen, onAddToContext, onOpenTerminal, active = true }: {
+export default function FilesHomePanel({ projectDir, onFileOpen, onAddToContext, onOpenTerminal, onOpenFolder, active = true }: {
   projectDir: string
   /** `opts.line` opens the file at that line — a rail content-search hit. */
   onFileOpen: (absPath: string, diff: boolean, opts?: { line?: number }) => void
@@ -44,6 +44,8 @@ export default function FilesHomePanel({ projectDir, onFileOpen, onAddToContext,
    *  the terminal view), which withdraws the action rather than offering a shell
    *  that will not start. */
   onOpenTerminal?: () => void
+  /** Open an absolute folder path in its own folder tab; see FileBrowserRail. */
+  onOpenFolder?: (absPath: string) => void
   /** False while kept mounted in a hidden panel: see FileBrowserRail. */
   active?: boolean
 }) {
@@ -143,7 +145,7 @@ export default function FilesHomePanel({ projectDir, onFileOpen, onAddToContext,
           // No preview pane beside the tree: every open spawns a file tab, so a
           // pane here could only ever hold a "select a file" hint. The tree takes
           // the whole tab instead.
-          <FileBrowserRail projectDir={projectDir} onFileOpen={onFileOpen} onAddToContext={onAddToContext} active={active} fill />
+          <FileBrowserRail projectDir={projectDir} onFileOpen={onFileOpen} onAddToContext={onAddToContext} onOpenFolder={onOpenFolder} active={active} fill />
         ) : (
         <div className="flex-1 min-w-0 flex flex-col items-center justify-center gap-2 text-muted px-6 text-center">
           <FileText size={22} className="opacity-40" />

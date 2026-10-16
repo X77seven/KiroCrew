@@ -3084,4 +3084,20 @@ describe('PierreWorkspaceTreeImpl — folders past the row cap', () => {
     expect(model.calls.select).not.toContain('big/empty')
   })
 
+  it('hands the cut folder to the host when its limit row is selected', async () => {
+    vi.mocked(api.projectTree).mockResolvedValue(mkTree({
+      paths: ['README.md'],
+      directories: ['big'],
+      truncated: true,
+      truncatedDirectories: ['big'],
+    }))
+    const onOpenFolder = vi.fn()
+    renderTree({ onOpenFolder })
+    await waitForTree()
+    const model = treeMock.last()
+    const row = model.calls.resetPaths.at(-1)!.find(p => p.startsWith('big/') && p.endsWith(M))!
+    expect(row).toContain('Open in folder tab')
+    act(() => model.simulateSelection(row))
+    expect(onOpenFolder).toHaveBeenCalledWith('big')
+  })
 })

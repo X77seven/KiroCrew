@@ -458,7 +458,7 @@ function NameSearchResults({ query, projectRoot, treeRows, onOpenFile, onRevealF
  * Both tree modes render the SAME Pierre tree; Changed feeds it the git-status
  * path set and its opens land in diff mode (`onFileOpen`'s second argument).
  */
-export default function FileBrowserRail({ projectDir, onFileOpen, onAddToContext, selectedPath, active = true, fill = false }: {
+export default function FileBrowserRail({ projectDir, onFileOpen, onAddToContext, selectedPath, active = true, fill = false, onOpenFolder }: {
   projectDir: string
   /** Take the host's full width instead of a resizable side column. The
    *  pinned Files tab has no preview pane beside the tree, so a fixed-width
@@ -474,6 +474,11 @@ export default function FileBrowserRail({ projectDir, onFileOpen, onAddToContext
   /** False while the rail is kept mounted but hidden: its tree state survives
    *  and the git-status poll pauses. */
   active?: boolean
+  /** Open an ABSOLUTE folder path in its own folder tab. When the host wires
+   *  it, the limit row under a folder the cap still cuts becomes "Open in
+   *  folder tab": that tab lists the folder on its own and searches it by name
+   *  with a page that grows, which the rail's project-wide search cannot. */
+  onOpenFolder?: (absPath: string) => void
 }) {
   const { t } = useTranslation()
   const [changedMode, _setChangedMode] = useState(() => sessionChangedMode)
@@ -838,6 +843,7 @@ export default function FileBrowserRail({ projectDir, onFileOpen, onAddToContext
                   onAddToContext={onAddToContext}
                   searchQuery={nameSearch ? null : query || null}
                   selectedPath={selectedPath ?? null}
+                  onOpenFolder={onOpenFolder ? folder => onOpenFolder(`${projectRoot}/${folder}`) : undefined}
                   reveal={reveal}
                   onRevealed={() => setReveal(null)}
                 />

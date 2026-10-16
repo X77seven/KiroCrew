@@ -9390,6 +9390,7 @@
       "row_hidden_only": "Ne contient que des éléments cachés (dossiers d’outils et de cache ignorés, entrées protégées)",
       "row_linked": "Lien vers un autre dossier : contenu non listé",
       "row_truncated": "Certains éléments ne sont pas affichés : limite de 10 000 éléments atteinte",
+      "row_truncated_open": "Ouvrir dans un onglet de dossier",
       "folder_listing_failed": "Impossible de charger {{paths}}.",
       "folder_listing_retry": "Réessayer",
       "folder_gone": "{{paths}} n’existe plus.",

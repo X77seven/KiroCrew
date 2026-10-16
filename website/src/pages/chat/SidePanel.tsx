@@ -1466,6 +1466,7 @@ export default function SidePanel({
                   // per-project shortcut, or the button promises a shell this
                   // panel will not open.
                   onOpenTerminal={terminalEnabled && !isWithheld('terminal') ? openProjectTerminal : undefined}
+                  onOpenFolder={p => openFolder(p, t.slot ?? null)}
                 />
               </div>
             )
@@ -1728,6 +1729,7 @@ function FileTabBody({ tab, active, projectDir, scrollMemoryKey, onContentChange
         <FileBrowserRail
           projectDir={projectDir}
           onAddToContext={onAddToContext}
+          onOpenFolder={onFolderOpen}
           selectedPath={tab.path || null}
           // In-place navigation: a tree click RE-TARGETS this tab (replaceId)
           // rather than spawning a sibling — only the pinned Files tab fans

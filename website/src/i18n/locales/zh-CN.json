@@ -9116,6 +9116,7 @@
       "row_hidden_only": "仅包含隐藏项（跳过的工具和缓存文件夹、受保护的条目）",
       "row_linked": "指向另一个文件夹的链接：未列出内容",
       "row_truncated": "部分项目未显示：已达到 10,000 个项目的数量上限",
+      "row_truncated_open": "在文件夹标签页中打开",
       "folder_listing_failed": "无法加载 {{paths}}。",
       "folder_listing_retry": "重试",
       "folder_gone": "{{paths}} 已不存在。",

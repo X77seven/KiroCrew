@@ -40,9 +40,17 @@ vi.mock('../pierre/tree', () => ({
     searchQuery?: string | null
     selectedPath?: string | null
     onFileOpen?: (abs: string) => void
+    onOpenFolder?: (folder: string) => void
     reveal?: { path: string; nonce: number } | null
   }) => (
     <>
+      {/* Stands in for the limit row under a cut folder: present only when
+          the rail hands the tree an opener, as the real row's action is. */}
+      {p.onOpenFolder && (
+        <button data-testid="tree-open-folder" onClick={() => p.onOpenFolder?.('big/cut')}>
+          open folder
+        </button>
+      )}
       <button
         data-testid="tree"
         data-mode={p.mode}
@@ -68,12 +76,12 @@ function newClient() {
   return new QueryClient({ defaultOptions: { queries: { retry: false } } })
 }
 
-function mount(props: { onFileOpen?: (p: string, d: boolean) => void; selectedPath?: string | null; projectDir?: string; active?: boolean } = {}) {
+function mount(props: { onFileOpen?: (p: string, d: boolean) => void; selectedPath?: string | null; projectDir?: string; active?: boolean; onOpenFolder?: (abs: string) => void } = {}) {
   const qc = newClient()
   const onFileOpen = props.onFileOpen ?? vi.fn()
   const utils = render(
     <QueryClientProvider client={qc}>
-      <FileBrowserRail projectDir={props.projectDir ?? DIR} onFileOpen={onFileOpen} selectedPath={props.selectedPath} active={props.active} />
+      <FileBrowserRail projectDir={props.projectDir ?? DIR} onFileOpen={onFileOpen} selectedPath={props.selectedPath} active={props.active} onOpenFolder={props.onOpenFolder} />
     </QueryClientProvider>,
   )
   return { qc, onFileOpen, ...utils }
@@ -1124,6 +1132,24 @@ describe('FileBrowserRail content results', () => {
 
 describe('FileBrowserRail past the tree row cap', () => {
   const truncatedTree = { root: DIR, paths: ['a.txt'], directories: ['big'], repo: false, truncated: true, truncatedDirectories: ['big'] }
+
+  it('opens a cut folder in a folder tab, as an absolute path, from its limit row', async () => {
+    H.api.projectTree.mockResolvedValue(truncatedTree)
+    const onOpenFolder = vi.fn()
+    mount({ onOpenFolder })
+    await waitFor(() => expect(H.api.projectTree).toHaveBeenCalled())
+    fireEvent.click(await screen.findByTestId('tree-open-folder'))
+    expect(onOpenFolder).toHaveBeenCalledWith(`${DIR}/big/cut`)
+    // Opening the tab starts no search of its own in the rail.
+    expect(H.api.fileSearch).not.toHaveBeenCalled()
+  })
+
+  it('offers no folder-tab action when the host cannot open one', async () => {
+    H.api.projectTree.mockResolvedValue(truncatedTree)
+    mount()
+    await waitFor(() => expect(H.api.projectTree).toHaveBeenCalled())
+    expect(screen.queryByTestId('tree-open-folder')).toBeNull()
+  })
 
   it('keeps a whole tree on the local filter', async () => {
     mount()

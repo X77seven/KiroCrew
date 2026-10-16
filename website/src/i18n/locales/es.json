@@ -9390,6 +9390,7 @@
       "row_hidden_only": "Solo contiene elementos ocultos (carpetas de herramientas y de caché omitidas, entradas protegidas)",
       "row_linked": "Enlace a otra carpeta: contenido no listado",
       "row_truncated": "Algunos elementos no se muestran: límite de 10.000 elementos alcanzado",
+      "row_truncated_open": "Abrir en pestaña de carpeta",
       "folder_listing_failed": "No se pudo cargar {{paths}}.",
       "folder_listing_retry": "Reintentar",
       "folder_gone": "{{paths}} ya no existe.",

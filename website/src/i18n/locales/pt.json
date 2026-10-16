@@ -9390,6 +9390,7 @@
       "row_hidden_only": "Contém apenas itens ocultos (pastas de ferramentas e de cache ignoradas, entradas protegidas)",
       "row_linked": "Link para outra pasta: conteúdo não listado",
       "row_truncated": "Alguns itens não são exibidos: limite de 10.000 itens atingido",
+      "row_truncated_open": "Abrir em aba de pasta",
       "folder_listing_failed": "Não foi possível carregar {{paths}}.",
       "folder_listing_retry": "Tentar de novo",
       "folder_gone": "{{paths}} não existe mais.",

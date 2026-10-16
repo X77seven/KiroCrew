@@ -9390,6 +9390,7 @@
       "row_hidden_only": "Contiene solo elementi nascosti (cartelle di strumenti e di cache escluse, voci protette)",
       "row_linked": "Collegamento a un’altra cartella: contenuto non elencato",
       "row_truncated": "Alcuni elementi non sono mostrati: limite di 10.000 elementi raggiunto",
+      "row_truncated_open": "Apri in una scheda cartella",
       "folder_listing_failed": "Impossibile caricare {{paths}}.",
       "folder_listing_retry": "Riprova",
       "folder_gone": "{{paths}} non esiste più.",

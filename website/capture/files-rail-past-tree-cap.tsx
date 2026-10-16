@@ -149,7 +149,7 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <MemoryRouter>
           <div style={{ height: '100vh', display: 'flex', justifyContent: 'flex-end' }} className="bg-bg text-text">
-            <FileBrowserRail projectDir={PROJECT} onFileOpen={() => {}} />
+            <FileBrowserRail projectDir={PROJECT} onFileOpen={() => {}} onOpenFolder={() => {}} />
           </div>
         </MemoryRouter>
       </ThemeProvider>
