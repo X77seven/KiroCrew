@@ -127,9 +127,11 @@ _MOVE_DIGESTS: dict[str, str] = dict(row.split() for row in """
     kiro_crew.slack.gateway                                     90d815f8e6349017
     """.splitlines() if row.strip())
 
+#: Reads the rebound map from stdin, not argv: one argv string holding every facade's map
+#: grows with each split and passes Windows' 32,767-character command-line limit.
 _PROBE = """
 import importlib, json, sys
-rebound = json.loads(sys.argv[1])
+rebound = json.loads(sys.stdin.read())
 checked, wrong = 0, []
 for facade, names in rebound.items():
     module = importlib.import_module(facade)
@@ -160,8 +162,11 @@ def test_a_rebound_name_is_the_object_its_home_module_holds(tmp_path: Path) -> N
     env = dict(os.environ)
     src = str(Path(kiro_crew.__file__).resolve().parents[1])
     env["PYTHONPATH"] = src + os.pathsep + env.get("PYTHONPATH", "")
+    command = [sys.executable, "-c", _PROBE]
+    assert sum(map(len, command)) < 8192, "the probe's command line must not carry the inventories"
     out = subprocess.run(
-        [sys.executable, "-c", _PROBE, json.dumps(_REBOUND)],
+        command,
+        input=json.dumps(_REBOUND),
         capture_output=True,
         check=True,
         env=env,
